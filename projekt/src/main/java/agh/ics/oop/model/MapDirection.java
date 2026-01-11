@@ -1,26 +1,22 @@
 package agh.ics.oop.model;
 
 public enum MapDirection {
-    NORTH (0, new Vector2d(0, 1)),
-    NORTHEAST(1, new Vector2d(1, 1)),
-    EAST(2, new Vector2d(1, 0)),
-    SOUTHEAST (3, new Vector2d(1, -1)),
-    SOUTH(4, new Vector2d(0, -1)),
-    SOUTHWEST (5, new Vector2d(-1, -1)),
-    WEST (6, new Vector2d(-1, 0)),
-    NORTHWEST (7, new Vector2d(-1, 1));
+    NORTH (0),
+    NORTHEAST (1),
+    EAST (2),
+    SOUTHEAST (3),
+    SOUTH (4),
+    SOUTHWEST (5),
+    WEST (6),
+    NORTHWEST (7);
 
     private final int value;
-    private final Vector2d unitVector;
 
 
-    MapDirection(int value, Vector2d unitVector) {
+    MapDirection(int value) {
         this.value = value;
-        this.unitVector = unitVector;
     }
-    public Vector2d toUnitVector() {
-        return unitVector;
-    }
+
 
     public int getValue() {
         return value;
@@ -63,5 +59,10 @@ public enum MapDirection {
 
             default -> "Brak danych";
         };
+    }
+
+    public MapDirection rotate(int rotation) {
+        int newIndex = (this.value + rotation) % MapDirection.values().length;
+        return MapDirection.fromInt(newIndex);
     }
 }

@@ -8,7 +8,7 @@ public enum MoveDirection {
     BACK (4, new Vector2d(0, -1)),
     BACK_LEFT (5, new Vector2d(-1, -1)),
     LEFT (6, new Vector2d(-1, 0)),
-    FRONT_LEFT (6, new Vector2d(-1, 0));
+    FRONT_LEFT (7, new Vector2d(-1, 1));
 
     private final int value;
     private final Vector2d unitVector;
