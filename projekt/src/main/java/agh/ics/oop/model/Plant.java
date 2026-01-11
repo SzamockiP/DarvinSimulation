@@ -6,7 +6,7 @@ public class Plant {
     public Plant(int energy) {
         this.energy = energy;
     }
-    
+
     public int getEnergy() {
         return energy;
     }

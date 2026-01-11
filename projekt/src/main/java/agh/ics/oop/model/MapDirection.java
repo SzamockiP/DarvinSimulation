@@ -22,6 +22,10 @@ public enum MapDirection {
         return unitVector;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     public static MapDirection fromInt(int value) {
         return switch (value) {
             case 0 -> NORTH;
