@@ -1,4 +1,4 @@
-package agh.isc.oop.model;
+package agh.ics.oop.model;
 
 public enum MoveDirection {
     FRONT (0, new Vector2d(0, 1)),
@@ -21,6 +21,6 @@ public enum MoveDirection {
         return unitVector;
     }
 
-    Ma
+
 
 }

@@ -1,4 +1,4 @@
-package agh.isc.oop;
+package agh.ics.oop;
 
 public class sth {
 }
