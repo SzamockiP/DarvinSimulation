@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class WorldMap<T extends Entity> {
     Boundary boundary;
-    private final Map<Vector2d, List<T>> entitiesByPosition = new Map<Vector2d, List<T>>();
+    private final Map<Vector2d, List<T>> entitiesByPosition = new HashMap<Vector2d, List<T>>();
 
     public WorldMap(int width, int height) {
         this.boundary = new Boundary(new Vector2d(0, 0), new Vector2d(width, height));
@@ -34,4 +34,11 @@ public class WorldMap<T extends Entity> {
     public Boundary getCurrentBoundary() {
         return boundary;
     }
+
+    public boolean canMoveTo(Vector2d position) {
+        // Sprawdzamy tylko, czy nie wychodzimy poza wymiary mapy
+        return position.follows(boundary.lowerLeft())
+                && position.precedes(boundary.upperRight());
+    }
+
 }

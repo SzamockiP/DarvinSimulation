@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.WorldMap;
+
 public class Animal extends Creature implements Movable {
     int childrenAmount;
     int age;
@@ -18,11 +20,12 @@ public class Animal extends Creature implements Movable {
 
 
     @Override
-    public void move(WorldMap map)){
+    public void move(WorldMap<?> map){
         if(this.isDead()) return;
+
         MapDirection rotationGene = this.genotype.nextGene();
 
-        this.direction = this.direction.rotate(rotationGene.getValue());
+        this.setDirection(this.getDirection().rotate(rotationGene.getValue()));
 
         if (rotationGene.equals(MapDirection.NORTH)) {
             int directionIndex = this.getDirection().getValue(); // wartość aktualnego kierunku

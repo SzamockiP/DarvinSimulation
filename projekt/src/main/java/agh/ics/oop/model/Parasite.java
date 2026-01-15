@@ -1,5 +1,7 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.WorldMap;
+
 public class Parasite extends Creature implements Movable{
     Animal host;
     boolean panicking;
@@ -7,6 +9,7 @@ public class Parasite extends Creature implements Movable{
 
     public Parasite(Vector2d position, int initialEnergy, int genomeSize) {
         super(position, initialEnergy);
+
     }
 
     public void setHost(Animal host) {
@@ -19,12 +22,14 @@ public class Parasite extends Creature implements Movable{
         return host;
     }
 
+    @Override
     public void addEnergy(int delta){
         this.setEnergy( this.getEnergy() + delta);
     }
 
+
     @Override
-    public void move(WorldMap map){
+    public void move(WorldMap<?> map){
         if(this.isDead()) return;
 
         if (this.host != null) {
@@ -90,7 +95,7 @@ public class Parasite extends Creature implements Movable{
                         this.setPosition(bouncePos);
                     }
                 }
-
+            }
             if(this.panicking){
                 this.addEnergy(-1);
             }
