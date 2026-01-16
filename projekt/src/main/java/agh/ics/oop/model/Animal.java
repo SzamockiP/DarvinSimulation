@@ -1,13 +1,13 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.WorldMap;
+import java.util.Comparator;
 
-public class Animal extends Creature implements Movable {
+public class Animal extends Creature {
     int childrenAmount;
     int age;
 
-    public Animal(Vector2d position, int initialEnergy) {
-        super(position, initialEnergy);
+    public Animal(Vector2d position, int initialEnergy, Genotype genotype) {
+        super(position, initialEnergy, genotype);
     }
 
     public void makeOlder(){
@@ -18,42 +18,30 @@ public class Animal extends Creature implements Movable {
         this.setEnergy( this.getEnergy() + delta);
     }
 
-
     @Override
-    public void move(WorldMap<?> map){
-        if(this.isDead()) return;
+    public void move(WorldMap map){
+        if(this.isAlive()) return;
 
-        MapDirection rotationGene = this.genotype.nextGene();
-
-        this.setDirection(this.getDirection().rotate(rotationGene.getValue()));
-
-        if (rotationGene.equals(MapDirection.NORTH)) {
-            int directionIndex = this.getDirection().getValue(); // wartość aktualnego kierunku
-
-            Vector2d unitVector = MoveDirection.values()[directionIndex].toUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
-
-            Vector2d currentPos = this.getPosition();
-            Vector2d newPos = currentPos.add(unitVector);
-
-            if (map.canMoveTo(newPos)) {
-                this.setPosition(newPos);
-            } else { // odbijamy od ściany
-
-                this.setDirection(this.getDirection().rotate(4)); // obrót
-
-                int newDirectionIndex = this.getDirection().getValue();
-                Vector2d bounceVector = MoveDirection.values()[newDirectionIndex].toUnitVector();
-
-                Vector2d bouncePos = currentPos.add(bounceVector);
-
-                if (map.canMoveTo(bouncePos)) {
-                    this.setPosition(bouncePos);
-                }
-            }
-        }
+        super.move(map);
 
         this.addEnergy(-1);
         this.makeOlder();
+    }
 
+    @Override
+    public Creature reproduce(Creature other) {
+        if(!other.getClass().equals(this.getClass())){
+            throw new ClassCastException("Can't reproduce different class creatures");
+        }
+
+        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
+
+        int newEnergy = getEnergy()/2 +  other.getEnergy()/2;
+        this.setEnergy(getEnergy()/2);
+        other.setEnergy(other.getEnergy()/2);
+
+        Vector2d newPosition = this.getPosition();
+
+        return new Animal(newPosition, newEnergy, newGenotype);
     }
 }

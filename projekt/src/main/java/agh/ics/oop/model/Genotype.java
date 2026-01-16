@@ -8,28 +8,43 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Genotype {
-    private List<MapDirection> genes = new ArrayList<MapDirection>();
-    int currentGeneIndex;
-    int geneAmount = 8;
+    private List<MoveDirection> genes;
+    private int currentGeneIndex;
+    private final int genotypeLenght;
 
-    public Genotype(List<MapDirection> genes) {
-        this.genes = new ArrayList<>(genes); // Kopia listy
+    // FIXME: poprawić trzeba by było faktycznie losowe a nie takie xD
+    public Genotype(int genotypeLenght) {
+        this.genotypeLenght = genotypeLenght;
+        this.currentGeneIndex = 0;
+        this.genes = new ArrayList<>();
+        for(int i = 0; i < this.genotypeLenght; i++){
+            genes.add(MoveDirection.FRONT);
+        }
     }
-    public List<MapDirection> getGenes() {
+
+    public Genotype(List<MoveDirection> genes) {
+        this.genes = new ArrayList<>(genes); // Kopia listy
+        this.genotypeLenght = genes.size();
+    }
+
+    public List<MoveDirection> getGenes() {
         return genes;
     }
-    public void setGenes(List<MapDirection> genes) {
+
+    public void setGenes(List<MoveDirection> genes) {
         this.genes = genes;
     }
+
     public int getCurrentGeneIndex() {
         return currentGeneIndex;
     }
+
     public void setCurrentGeneIndex(int currentGeneIndex) {
         this.currentGeneIndex = currentGeneIndex;
     }
 
-    public MapDirection nextGene(){
-        MapDirection gene = genes.get(currentGeneIndex);
+    public MoveDirection nextGene(){
+        MoveDirection gene = genes.get(currentGeneIndex);
         currentGeneIndex = (currentGeneIndex + 1) % genes.size();
         return gene;
     }
@@ -39,6 +54,7 @@ public class Genotype {
         Genotype weaker;
         int energyStronger;
 
+        // ustaw genotypy
         if(energyFirst >= energySecond){
             stronger = this;
             weaker = other;
@@ -53,7 +69,7 @@ public class Genotype {
         int combinedEnergy = energyFirst + energySecond;
 
         // Obliczamy ile genów bierze silniejszy
-        double ratio = (double) energyStronger / combinedEnergy;
+        float ratio = (float) energyStronger / combinedEnergy;
         int genesCount = genes.size();
         int amountStronger = (int) (genesCount * ratio);
         int amountWeaker = genesCount - amountStronger;
@@ -61,9 +77,9 @@ public class Genotype {
         // Losujemy stronę dla silniejszego (0 - lewa, 1 - prawa)
         boolean swapSides = random.nextBoolean();
 
-        List<MapDirection> childGenes = new ArrayList<>();
-        List<MapDirection> strongerGenes = stronger.getGenes();
-        List<MapDirection> weakerGenes = weaker.getGenes();
+        List<MoveDirection> childGenes = new ArrayList<>(genesCount);
+        List<MoveDirection> strongerGenes = stronger.getGenes();
+        List<MoveDirection> weakerGenes = weaker.getGenes();
 
         if(swapSides){
             // Silniejszy bierze lewą stronę, słabszy wypełnia resztę
@@ -82,11 +98,10 @@ public class Genotype {
             int idx = random.nextInt(genesCount);
             if(!indexes.contains(idx)){
                 indexes.add(idx);
-                childGenes.set(idx, MapDirection.values()[random.nextInt(MapDirection.values().length)]);
+                childGenes.set(idx, MoveDirection.values()[random.nextInt(MoveDirection.values().length)]);
             }
         }
 
         return new Genotype(childGenes);
     }
-
 }

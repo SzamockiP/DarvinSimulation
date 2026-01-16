@@ -3,14 +3,23 @@ package agh.ics.oop.model;
 import agh.ics.oop.model.util.Boundary;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class WorldMap<T extends Entity> {
-    Boundary boundary;
-    private final Map<Vector2d, List<T>> entitiesByPosition = new HashMap<Vector2d, List<T>>();
+    private final Boundary boundary;
+    private final Map<Vector2d, List<T>> entitiesByPosition = new HashMap<>();
 
-    public WorldMap(int width, int height) {
-        this.boundary = new Boundary(new Vector2d(0, 0), new Vector2d(width, height));
+
+    public WorldMap(Boundary boundary) {
+        this.boundary = boundary;
+        for(int y = 0; y < boundary.upperRight().getY(); y++) {
+            for (int x = 0; x < boundary.upperRight().getX(); x++) {
+                entitiesByPosition.put(new Vector2d(x, y), new ArrayList<>());
+            }
+        }
+    }
+
+    public void addEntity(T entity) {
+        entitiesByPosition.get(entity.getPosition()).add(entity);
     }
 
     public Collection<T> getEntities() {
@@ -35,10 +44,19 @@ public class WorldMap<T extends Entity> {
         return boundary;
     }
 
-    public boolean canMoveTo(Vector2d position) {
+    public boolean inBounds(Vector2d position) {
         // Sprawdzamy tylko, czy nie wychodzimy poza wymiary mapy
         return position.follows(boundary.lowerLeft())
                 && position.precedes(boundary.upperRight());
     }
 
+    public void move(Creature creature) {
+        Vector2d oldPosition = creature.getPosition();
+        creature.move(this);
+
+        if(!oldPosition.equals(creature.getPosition())) {
+            entitiesByPosition.get(oldPosition).remove((T)creature);
+            entitiesByPosition.get(creature.getPosition()).add((T)creature);
+        }
+    }
 }
