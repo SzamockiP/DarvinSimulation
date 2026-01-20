@@ -12,12 +12,12 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
         super(position);
         this.energy = initialEnergy;
         this.genotype = genotype;
-        direction = MapDirection.NORTH;
-        isAlive = true;
+        this.direction = MapDirection.NORTH;
+        this.isAlive = true;
     }
 
-    public Creature(Vector2d position, int initialEnergy) {
-        this(position, initialEnergy, Genotype.generateGenotype());
+    public Creature(Vector2d position, int initialEnergy, int genomeSize) {
+        this(position, initialEnergy, new Genotype(genomeSize));
     }
 
     public MapDirection getDirection() {
