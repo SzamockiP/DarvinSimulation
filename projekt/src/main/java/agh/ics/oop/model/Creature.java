@@ -1,4 +1,5 @@
 package agh.ics.oop.model;
+import agh.ics.oop.model.Genotype;
 
 public abstract class Creature extends Entity implements IAlive, IMove,IReproduce{
     private MapDirection direction;
@@ -13,6 +14,10 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
         this.genotype = genotype;
         direction = MapDirection.NORTH;
         isAlive = true;
+    }
+
+    public Creature(Vector2d position, int initialEnergy) {
+        this(position, initialEnergy, Genotype.generateGenotype());
     }
 
     public MapDirection getDirection() {

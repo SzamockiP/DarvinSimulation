@@ -10,13 +10,8 @@ public class Parasite extends Creature implements IMove,IReproduce {
     private int daysWithHost;
 
     public Parasite(Vector2d position, SimulationConfig simulationConfig) {
-        this(position, Genotype.generateGenotype(), simulationConfig);
-    }
-
-    // Konstruktor dka dzieci
-    public Parasite(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
+        super(position, simulationConfig.startingEnergy());
         this.simulationConfig = simulationConfig;
-        super(position, simulationConfig.startingEnergy(), genotype);
     }
 
     public Parasite(Vector2d position, Genotype genotype, int energy, SimulationConfig simulationConfig) {

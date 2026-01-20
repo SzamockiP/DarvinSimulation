@@ -8,10 +8,10 @@ public class Animal extends Creature {
     int age;
 
     public Animal(Vector2d position, int initialEnergy) {
-        this(position, initialEnergy, Genotype.generateGenotype());
+        super(position, initialEnergy);
     }
 
-    // --- konstruktor dla dzieci z rozmnażania ---
+    // Konstruktor dla dzieci (z dziedziczeniem)
     public Animal(Vector2d position, int initialEnergy, Genotype genotype) {
         super(position, initialEnergy, genotype);
     }
