@@ -1,20 +1,30 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.WorldMap;
+import agh.ics.oop.model.util.SimulationConfig;
+import agh.ics.oop.model.Genotype;
 
-public class Parasite extends Creature implements Movable{
+public class Parasite extends Creature implements IMove,IReproduce {
     Animal host;
-    boolean panicking;
-    int daysWithHost;
+    private boolean panicking;
+    private final SimulationConfig simulationConfig;
+    private int daysWithHost;
 
-    public Parasite(Vector2d position, int initialEnergy, int genomeSize) {
-        super(position, initialEnergy);
+    public Parasite(Vector2d position, SimulationConfig simulationConfig) {
+        super(position, simulationConfig.startingEnergy());
+        this.simulationConfig = simulationConfig;
+    }
 
+    public Parasite(Vector2d position, Genotype genotype, int energy, SimulationConfig simulationConfig) {
+        this.simulationConfig = simulationConfig;
+        super(position, energy, genotype);
     }
 
     public void setHost(Animal host) {
+        if(this.host != null )
+            return;
+
+        this.panicking = host == null;
         this.host = host;
-        this.panicking = false;
         this.daysWithHost = 0;
     }
     
@@ -23,83 +33,78 @@ public class Parasite extends Creature implements Movable{
     }
 
     @Override
-    public void addEnergy(int delta){
-        this.setEnergy( this.getEnergy() + delta);
-    }
+    public void move(WorldMap map){
+        if(!this.isAlive()){
+            return;
+        }
 
+        // sprawdzamy, czy host wgl żyje
+        if(this.host != null && !this.host.isAlive()){
+            this.panicking = true;
+            this.host = null;
+        }
+
+        // jeśli mamy hosta
+        if(this.host != null){
+            daysWithHost++;
+            // sprawdzamy wszystkie pozycje wokół hosta (tylko z pasożytami)
+            // i ustawiamy pozycję na pustą wokół; w przeciwnym wypadku na już zajętą z
+            Vector2d hostPosition = this.host.getPosition();
+            MapDirection hostBack = this.host.getDirection().rotate(MoveDirection.BACK);
+
+            // przyklej mu się na tyłek
+            Vector2d newPosition = hostPosition.add(hostBack.getUnitVector());
+            // jeśli nie pasuje, to znajdź legalną pozycję
+            if(!map.inBounds(newPosition) || map.isOccupied(newPosition)){
+                for(MapDirection direction : MapDirection.values()){
+                    newPosition = hostPosition.add(direction.getUnitVector());
+                    // pierwsza wolna pozycja, to zajmij
+                    if(map.inBounds(newPosition) && !map.isOccupied(newPosition)){
+                        break;
+                    }
+                }
+            }
+            // jeśli nadal nielegalna pozycja (nie znaleźliśmy wolnej legalnej)
+            if(!map.inBounds(newPosition)){
+                for(MapDirection direction : MapDirection.values()){
+                    newPosition = hostPosition.add(direction.getUnitVector());
+                    // pierwsza wolna pozycja, to zajmij
+                    if(map.inBounds(newPosition)){
+                        break;
+                    }
+                }
+            }
+
+            // ustaw pozycję i zabierz hostowi energię
+            this.setPosition(newPosition);
+            this.host.addEnergy(-this.simulationConfig.energyLossDueParasite());
+
+            if(this.host.getEnergy() <= 0){
+                this.host.kill();
+            }
+        }
+        else {
+            super.move(map);
+            this.addEnergy(-this.simulationConfig.energyLossInPanic());
+        }
+
+    }
 
     @Override
-    public void move(WorldMap<?> map){
-        if(this.isDead()) return;
-
-        if (this.host != null) {
-            if (this.host.isDead()) { //Host umarł - zaczynamy panikować i tracimy referencję
-                this.host = null;
-                this.panicking = true;
-            } else {
-                this.daysWithHost++;
-            }
+    public Creature reproduce(Creature other) {
+        if(!other.getClass().equals(this.getClass())){
+            throw new ClassCastException("Can't reproduce different class creatures");
         }
 
-        if (this.host != null) {
-            Vector2d hostPos = this.host.getPosition();
-            int startDirectionIndex = this.host.getDirection().getValue();
-            Vector2d anyValidSpot = null;
+        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
 
-            for (int i = 0; i < 8; i++) {
-                int checkIndex = (startDirectionIndex + i) % 8;
+        int newEnergy = getEnergy()/2 +  other.getEnergy()/2;
+        this.setEnergy(getEnergy()/2);
+        other.setEnergy(other.getEnergy()/2);
 
-                Vector2d unitVector = MoveDirection.values()[checkIndex].toUnitVector();
-                Vector2d potentialPos = hostPos.add(unitVector);
+        Vector2d newPosition = this.getPosition();
 
-                if (map.canMoveTo(potentialPos)) {
-                    // Puste miejsce
-                    if (!map.isOccupied(potentialPos)) {
-                        this.setPosition(potentialPos);
-                        host.addEnergy(-1);
-                        return;
-                    }
-
-                    // Zapisz jakiekolwiek poprawne miejsce na później
-                    if (anyValidSpot == null) {
-                        anyValidSpot = potentialPos;
-                    }
-                }
-            }
-            if (anyValidSpot != null) {
-                this.setPosition(anyValidSpot);
-            }
-
-            host.addEnergy(-1);
-        } else { // nie ma hosta
-            MapDirection rotationGene = this.genotype.nextGene();
-
-            this.setDirection(this.getDirection().rotate(rotationGene.getValue()));
-
-            if (rotationGene.equals(MapDirection.NORTH)) {
-                int directionIndex = this.getDirection().getValue(); // wartość aktualnego kierunku
-
-                Vector2d unitVector = MoveDirection.values()[directionIndex].toUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
-                Vector2d currentPos = this.getPosition();
-                Vector2d newPos = currentPos.add(unitVector);
-
-                if (map.canMoveTo(newPos)) {
-                    this.setPosition(newPos);
-                } else { // odbijamy od ściany
-                    this.setDirection(this.getDirection().rotate(4)); // obrót
-
-                    Vector2d bounceVector = MoveDirection.values()[this.getDirection().getValue()].toUnitVector();
-                    Vector2d bouncePos = currentPos.add(bounceVector);
-
-                    if (map.canMoveTo(bouncePos)) {
-                        this.setPosition(bouncePos);
-                    }
-                }
-            }
-            if(this.panicking){
-                this.addEnergy(-1);
-            }
-            this.addEnergy(-1);
-        }
+        return new Parasite(newPosition, newGenotype, newEnergy, simulationConfig);
     }
+
 }

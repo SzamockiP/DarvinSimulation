@@ -1,14 +1,23 @@
 package agh.ics.oop.model;
+import agh.ics.oop.model.Genotype;
 
-public abstract class Creature extends Entity implements IAlive{
+public abstract class Creature extends Entity implements IAlive, IMove,IReproduce{
     private MapDirection direction;
     private int energy;
-    private boolean dead;
+    private boolean isAlive;
     Genotype genotype;
 
-    public Creature(Vector2d position, int energy) {
+
+    public Creature(Vector2d position, int initialEnergy, Genotype genotype) {
         super(position);
-        this.energy = energy;
+        this.energy = initialEnergy;
+        this.genotype = genotype;
+        direction = MapDirection.NORTH;
+        isAlive = true;
+    }
+
+    public Creature(Vector2d position, int initialEnergy) {
+        this(position, initialEnergy, Genotype.generateGenotype());
     }
 
     public MapDirection getDirection() {
@@ -23,21 +32,62 @@ public abstract class Creature extends Entity implements IAlive{
         return genotype;
     }
 
+    // IAlive
     @Override
     public int getEnergy() {
         return energy;
     }
 
+    @Override
     public void setEnergy(int energy) {
         this.energy = energy;
     }
 
-    public void setDead(boolean dead) {
-        this.dead = dead;
+    @Override
+    public void addEnergy(int delta) {
+        this.energy += delta;
     }
 
     @Override
-    public boolean isDead() {
-        return dead;
+    public boolean isAlive() {
+        return isAlive;
     }
+
+    @Override
+    public void kill() {
+        isAlive = false;
+    }
+
+    // IMovable
+    public void move(WorldMap map){
+        MoveDirection rotation = this.genotype.nextGene();
+
+        this.setDirection(this.getDirection().rotate(rotation));
+
+        if (rotation.equals(MoveDirection.FRONT)) {
+            Vector2d unitVector = this.getDirection().getUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
+
+            Vector2d currentPos = this.getPosition();
+            Vector2d newPos = currentPos.add(unitVector);
+
+            if (map.inBounds(newPos)) {
+                this.setPosition(newPos);
+            } else { // odbijamy od ściany
+
+                this.setDirection(this.getDirection().rotate(MoveDirection.BACK)); // zawróć
+
+                Vector2d bounceVector = this.getDirection().getUnitVector();
+
+                Vector2d bouncePos = currentPos.add(bounceVector);
+
+                // FIXME: Biedak może być w rogu i znowu się teoretycznie odbić, ale to już jego problem
+                if (map.inBounds(bouncePos)) {
+                    this.setPosition(bouncePos);
+                }
+            }
+        }
+    }
+
+    // IReproduce
+    public abstract Creature reproduce(Creature other);
 }
