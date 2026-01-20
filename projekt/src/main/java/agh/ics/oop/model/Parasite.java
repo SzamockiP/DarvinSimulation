@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.SimulationConfig;
+import agh.ics.oop.model.Genotype;
 
 public class Parasite extends Creature implements IMove,IReproduce {
     Animal host;
@@ -8,6 +9,11 @@ public class Parasite extends Creature implements IMove,IReproduce {
     private final SimulationConfig simulationConfig;
     private int daysWithHost;
 
+    public Parasite(Vector2d position, SimulationConfig simulationConfig) {
+        this(position, Genotype.generateGenotype(), simulationConfig);
+    }
+
+    // Konstruktor dka dzieci
     public Parasite(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
         this.simulationConfig = simulationConfig;
         super(position, simulationConfig.startingEnergy(), genotype);

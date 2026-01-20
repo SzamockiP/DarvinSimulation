@@ -27,6 +27,7 @@ public class Genotype {
         this.genotypeLenght = genes.size();
     }
 
+
     public List<MoveDirection> getGenes() {
         return genes;
     }
@@ -41,6 +42,24 @@ public class Genotype {
 
     public void setCurrentGeneIndex(int currentGeneIndex) {
         this.currentGeneIndex = currentGeneIndex;
+    }
+
+    public static Genotype generateGenotype() {
+        List<MoveDirection> randomGenes = new ArrayList<>();
+        Random random = new Random();
+
+        // geneAmount to Twoje pole w klasie (np. 8)
+        for (int i = 0; i < this.genotypeLenght; i++) {
+            int randomIndex;
+            // Losujemy indeks od 0 do 7 (długość MoveDirection)
+            if (i%2 == 0) randomIndex = random.nextInt(MoveDirection.values().length);
+
+            else randomIndex = 0; // zwierzak nie kręci się w kółko
+
+            randomGenes.add(MoveDirection.values()[randomIndex]);
+        }
+
+        return new Genotype(randomGenes);
     }
 
     public MoveDirection nextGene(){

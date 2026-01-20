@@ -1,11 +1,17 @@
 package agh.ics.oop.model;
 
 import java.util.Comparator;
+import agh.ics.oop.model.Genotype;
 
 public class Animal extends Creature {
     int childrenAmount;
     int age;
 
+    public Animal(Vector2d position, int initialEnergy) {
+        this(position, initialEnergy, Genotype.generateGenotype());
+    }
+
+    // --- konstruktor dla dzieci z rozmnażania ---
     public Animal(Vector2d position, int initialEnergy, Genotype genotype) {
         super(position, initialEnergy, genotype);
     }
