@@ -9,7 +9,7 @@ public class Parasite extends Creature implements IMove,IReproduce {
     private int daysWithHost;
 
     public Parasite(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
-        super(position, simulationConfig.startingEnergy());
+        super(position, simulationConfig.startingEnergy(), genotype);
         this.simulationConfig = simulationConfig;
     }
 

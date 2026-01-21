@@ -8,7 +8,7 @@ public class Animal extends Creature {
     int age;
 
     public Animal(Vector2d position, int initialEnergy) {
-        super(position, initialEnergy);
+        super(position, initialEnergy, 5);
     }
 
     // Konstruktor dla dzieci (z dziedziczeniem)

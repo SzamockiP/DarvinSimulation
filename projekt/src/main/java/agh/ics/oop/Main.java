@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    static  void main(String[] args) {
+    public static void main(String[] args) {
         SimulationConfig simulationConfig = new SimulationConfig(
                 new Boundary(new Vector2d(0,0),new Vector2d(10,10)),
                 new Boundary(new Vector2d(0,4),new Vector2d(10,6)),
