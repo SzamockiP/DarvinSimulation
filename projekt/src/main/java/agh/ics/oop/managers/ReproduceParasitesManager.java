@@ -32,8 +32,11 @@ public class ReproduceParasitesManager implements ISimulationManager {
                 }
                 if(secondBestParasite == null) continue;
 
-                Parasite newParasite = (Parasite) bestParasite.reproduce(secondBestParasite);
-                parasiteMap.addEntity(newParasite);
+                if(bestParasite.getEnergy() >= config.reproductionMinEnergy() &&
+                        config.reproductionMinEnergy() <= secondBestParasite.getEnergy()){
+                    Parasite newParasite = (Parasite) bestParasite.reproduce(secondBestParasite);
+                    parasiteMap.addEntity(newParasite);
+                }
             }
         }
     }

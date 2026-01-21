@@ -29,8 +29,9 @@ public class Simulation {
             worldMap.getAnimals().addEntity(
                     new Animal(
                             position,
+                            new Genotype(this.simulationConfig.genotypeLength()),
                             this.simulationConfig.startingEnergy(),
-                            new Genotype(this.simulationConfig.genotypeLength())
+                            this.simulationConfig
                     )
             );
         }
