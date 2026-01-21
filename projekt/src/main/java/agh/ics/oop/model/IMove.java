@@ -1,5 +1,5 @@
 package agh.ics.oop.model;
 
 public interface IMove {
-    void move(WorldMap map);
+    void move(LayerMap map);
 }

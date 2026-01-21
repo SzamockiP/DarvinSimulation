@@ -59,7 +59,7 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
     }
 
     // IMovable
-    public void move(WorldMap map){
+    public void move(LayerMap map){
         MoveDirection rotation = this.genotype.nextGene();
 
         this.setDirection(this.getDirection().rotate(rotation));
