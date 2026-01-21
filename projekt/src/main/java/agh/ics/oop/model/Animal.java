@@ -26,7 +26,7 @@ public class Animal extends Creature {
 
     @Override
     public void move(LayerMap map){
-        if(this.isAlive()) return;
+        if(!this.isAlive()) return;
 
         super.move(map);
 
