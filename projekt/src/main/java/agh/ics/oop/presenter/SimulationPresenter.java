@@ -1,6 +1,7 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.statistics.*;
 import agh.ics.oop.model.util.*;
 import javafx.fxml.FXML;
 import agh.ics.oop.model.util.Boundary;
@@ -14,6 +15,8 @@ import javafx.application.Platform;
 
 public class SimulationPresenter implements MapChangeListener{
     private WorldMap worldMap;
+    private StatisticsEngine statisticsEngine;
+    private volatile boolean isSimulationRunning = false;
 
     @FXML
     private Canvas mapCanvas;
@@ -57,24 +60,54 @@ public class SimulationPresenter implements MapChangeListener{
         System.out.println("Okno załadowane poprawnie!");
     }
 
+    @FXML
+    private void onStopClicked() {
+        isSimulationRunning = false;
+        System.out.println("Symulacja zatrzymana.");
+    }
+
+    @FXML
+    private void onResumeClicked() {
+        isSimulationRunning = true;
+        System.out.println("Symulacja wznowiona.");
+    }
+
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
+        SimulationStatistics stats = statisticsEngine.calculate();
+
+        // Wysyłamy do GUI tylko GOTOWY WYNIK.
         Platform.runLater(() -> {
-            drawMap();
-
-            int animalsCount = worldMap.getAnimals().getEntities().size();
-            int parasitesCount = worldMap.getParasites().getEntities().size();
-            int plantsCount = worldMap.getPlants().getEntities().size();
-            String avgAnimalLife = String.format("%.2f", worldMap.getAverageAnimalLifeSpan());
-
-            infoLabel.setText(
-                    message +
-                            "\nZwierząt: " + animalsCount +
-                            "\nPasożytów: " + parasitesCount +
-                            "\nRoślin: " + plantsCount +
-                            "\nŚr. życie Zwierząt: " + avgAnimalLife + " dni"
-            );
+            drawMap(); // Rysowanie nadal musi być w runLater
+            updateStatsLabel(stats, message);
         });
+    }
+    private void updateStatsLabel(SimulationStatistics stats, String message) {
+        String topGenotype = stats.mostPopularGenotypes().isEmpty() ? "-" : stats.mostPopularGenotypes().get(0).toString();
+
+        infoLabel.setText(String.format(
+                """
+                %s
+                Zwierząt: %d
+                Roślin: %d
+                Pasożytów: %d
+                Wolne pola: %d
+                Śr. energia: %.2f
+                Śr. długość życia (martwe): %.2f
+                Śr. liczba dzieci (żywe): %.2f
+                Top Genotyp: 
+                %s
+                """,
+                message,
+                stats.animalCount(),
+                stats.plantCount(),
+                stats.parasiteCount(),
+                stats.freeFieldsCount(),
+                stats.averageEnergy(),
+                stats.averageLifeSpan(),
+                stats.averageChildren(),
+                topGenotype
+        ));
     }
 
     @FXML
@@ -115,33 +148,37 @@ public class SimulationPresenter implements MapChangeListener{
 
             // Tworzymy mapę o wybranych wymiarach
             this.worldMap = new WorldMap(config.mapSize());
+            this.statisticsEngine = new StatisticsEngine(worldMap);
             Simulation simulation = new Simulation(worldMap, config);
 
             simulation.addObserver(this);
 
+            isSimulationRunning = true;
+
             Thread simulationThread = new Thread(() -> {
                 while (true) {
                     try {
-                        simulation.step();
-                        Thread.sleep(300);
+                        // --- ZMIANA TUTAJ ---
+                        // Jeśli symulacja jest "włączona", robimy krok.
+                        // Jeśli jest "zatrzymana", pętla tylko czeka (sleep), nie zmieniając mapy.
+                        if (isSimulationRunning) {
+                            simulation.step();
+                        }
+
+                        Thread.sleep(300); // Czekamy zawsze, żeby nie zarżnąć procesora
+                        // --------------------
+
                     } catch (InterruptedException e) {
                         break;
                     } catch (Exception e) {
-                        // Jeśli wystąpi jakikowiek inny błąd, wypisz go w konsoli
                         System.err.println("Błąd w symulacji!");
                         e.printStackTrace();
-
-                        break;// zatrzymaj symulację po błędzie, żeby nie spamować konsoli
+                        break;
                     }
                 }
             });
             simulationThread.setDaemon(true);
             simulationThread.start();
-
-            /*System.out.println("Uruchamiam mapę: " + width + "x" + height);
-            drawMap();
-            infoLabel.setText("Mapa utworzona: " + width + "x" + height);*/
-
         } catch (NumberFormatException e) {
             // jak ktoś wpisze "ala" zamiast liczby
             infoLabel.setText("Błąd: Wpisz poprawne liczby!");

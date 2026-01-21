@@ -26,7 +26,7 @@
 
     <right>
         <VBox alignment="CENTER" spacing="-6" style="-fx-padding: 10;">
-            <HBox alignment="CENTER" spacing="5" style="-fx-padding: 10;">
+            <HBox alignment="CENTER" spacing="-2" style="-fx-padding: 10;">
                 <Label text="Mapa: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
                 <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                     <Label text="Szerokość" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
@@ -96,8 +96,8 @@
                 <Label text="Energia pobierana po rozmnażaniu: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
                 <TextField fx:id="minEnergyReproduce" text="1" maxWidth="60"/>
             </HBox>
-            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
-                <Label text="Liczba mutacji genów u potomków" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
+            <VBox alignment="CENTER" spacing="-6" style="-fx-padding: 10;">
+                <Label text="Liczba mutacji genów u potomków" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Min" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
@@ -114,10 +114,13 @@
 
     <left>
         <VBox alignment="CENTER" style="-fx-padding: 20;" spacing="10">
-            <Label fx:id="infoLabel" text="Tu pojawią się statystyki" style="-fx-text-fill: blue;"/>
+            <Label fx:id="infoLabel" text="Tu pojawią się statystyki" style="-fx-text-fill: black;"/>
 
-            <Button text="Start" onAction="#onSimulationStartClicked"/>
+            <Button text="STOP" onAction="#onStopClicked" style="-fx-background-color: red; -fx-text-fill: white;"/>
+            <Button text="START (Wznów)" onAction="#onResumeClicked" style="-fx-background-color: green; -fx-text-fill: white;"/>
         </VBox>
     </left>
-
+    <bottom>
+        <Button text="Start" onAction="#onSimulationStartClicked"/>
+    </bottom>
 </BorderPane>

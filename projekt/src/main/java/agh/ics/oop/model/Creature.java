@@ -111,6 +111,9 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
         this.addEnergy(-cost);
         other.addEnergy(-cost);
 
+        if (this instanceof Animal) ((Animal) this).addChild();
+        if (other instanceof Animal) ((Animal) other).addChild();
+
         Vector2d newPosition = this.getPosition();
 
         return createChild(newPosition, newGenotype, newEnergy);

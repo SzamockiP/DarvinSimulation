@@ -2,6 +2,7 @@ package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.SimulationConfig;
 
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -115,5 +116,13 @@ public class Genotype {
         }
 
         return new Genotype(childGenes);
+    }
+
+    @Override
+    public String toString() {
+        return genes.stream()
+                // zamiast samego obiektu, pobieramy jego wartość (int)
+                .map(gene -> String.valueOf(gene.getValue()))
+                .collect(java.util.stream.Collectors.joining(" "));
     }
 }

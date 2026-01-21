@@ -30,6 +30,9 @@ public class Animal extends Creature {
     public int getChildrenAmount(){
         return childrenAmount;
     }
+    public void addChild() {
+        this.childrenAmount++;
+    }
 
     public void addEnergy(int delta){
         this.setEnergy( this.getEnergy() + delta);
