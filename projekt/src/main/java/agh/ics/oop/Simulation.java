@@ -132,6 +132,8 @@ public class Simulation {
         
         managers.add(new KillAnimalsManager());
         managers.add(new KillParasitesManager());
+
+        managers.add(new AddPlantsManager());
     }
 
     public void runSimulation() {

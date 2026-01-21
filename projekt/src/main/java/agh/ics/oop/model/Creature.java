@@ -103,9 +103,9 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
 
         Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
 
-        int newEnergy = getEnergy()/2 +  other.getEnergy()/2;
-        this.setEnergy(getEnergy()/2);
-        other.setEnergy(other.getEnergy()/2);
+        int newEnergy = 2 * simulationConfig.reproductionCost();
+        this.setEnergy(getEnergy() - simulationConfig.reproductionCost());
+        other.setEnergy(other.getEnergy() - simulationConfig.reproductionCost());
 
         Vector2d newPosition = this.getPosition();
 
