@@ -5,17 +5,21 @@ import agh.ics.oop.model.util.SimulationConfig;
 public class Parasite extends Creature implements IMove,IReproduce {
     Animal host;
     private boolean panicking;
-    private final SimulationConfig simulationConfig;
+    //private final SimulationConfig simulationConfig;
     private int daysWithHost;
 
     public Parasite(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
-        super(position, simulationConfig.startingEnergy(), genotype);
-        this.simulationConfig = simulationConfig;
+        super(position, simulationConfig.startingEnergy(), genotype, simulationConfig);
+        panicking =  false;
+        //this.simulationConfig = simulationConfig;
+        daysWithHost = 0;
     }
 
     public Parasite(Vector2d position, Genotype genotype, int energy, SimulationConfig simulationConfig) {
-        this.simulationConfig = simulationConfig;
-        super(position, energy, genotype);
+        //this.simulationConfig = simulationConfig;
+        super(position, energy, genotype, simulationConfig);
+        panicking =  false;
+        daysWithHost = 0;
     }
 
     public void setHost(Animal host) {
@@ -76,7 +80,7 @@ public class Parasite extends Creature implements IMove,IReproduce {
 
             // ustaw pozycję i zabierz hostowi energię
             this.setPosition(newPosition);
-            this.host.addEnergy(-this.simulationConfig.energyLossDueParasite());
+            this.host.addEnergy(-getSimulationConfig().energyLossDueParasite());
 
             if(this.host.getEnergy() <= 0){
                 this.host.kill();
@@ -84,12 +88,19 @@ public class Parasite extends Creature implements IMove,IReproduce {
         }
         else {
             super.move(map);
-            this.addEnergy(-this.simulationConfig.energyLossInPanic());
+            if(panicking) this.addEnergy(-getSimulationConfig().energyLossInPanic());
+            else this.addEnergy(-getSimulationConfig().dailyEnergyLoss());
         }
 
     }
 
     @Override
+    protected Creature createChild(Vector2d position, Genotype genotype, int energy) {
+        // Zwierzę tworzy małe Zwierzę
+        return new Parasite(position, genotype, energy, getSimulationConfig());
+    }
+
+    /*@Override
     public Creature reproduce(Creature other) {
         if(!other.getClass().equals(this.getClass())){
             throw new ClassCastException("Can't reproduce different class creatures");
@@ -104,6 +115,6 @@ public class Parasite extends Creature implements IMove,IReproduce {
         Vector2d newPosition = this.getPosition();
 
         return new Parasite(newPosition, newGenotype, newEnergy, simulationConfig);
-    }
+    }*/
 
 }

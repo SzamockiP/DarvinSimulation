@@ -2,22 +2,36 @@ package agh.ics.oop.model;
 
 import java.util.Comparator;
 import agh.ics.oop.model.Genotype;
+import agh.ics.oop.model.util.SimulationConfig;
 
 public class Animal extends Creature {
     int childrenAmount;
     int age;
+    //private final SimulationConfig simulationConfig;
 
-    public Animal(Vector2d position, int initialEnergy) {
-        super(position, initialEnergy, 5);
+    public Animal(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
+        super(position, simulationConfig.startingEnergy(), genotype, simulationConfig);
+        age = 0;
+        childrenAmount = 0;
     }
 
-    // Konstruktor dla dzieci (z dziedziczeniem)
-    public Animal(Vector2d position, int initialEnergy, Genotype genotype) {
-        super(position, initialEnergy, genotype);
+    public Animal(Vector2d position, Genotype genotype, int energy, SimulationConfig simulationConfig) {
+        super(position, energy, genotype, simulationConfig);
+        age = 0;
+        childrenAmount = 0;
     }
 
     public void makeOlder(){
         this.age++;
+    }
+    public int  getAge(){
+        return age;
+    }
+    public int getChildrenAmount(){
+        return childrenAmount;
+    }
+    public void addChild() {
+        this.childrenAmount++;
     }
 
     public void addEnergy(int delta){
@@ -30,11 +44,17 @@ public class Animal extends Creature {
 
         super.move(map);
 
-        this.addEnergy(-1);
+        this.addEnergy(-getSimulationConfig().dailyEnergyLoss());
         this.makeOlder();
     }
 
     @Override
+    protected Creature createChild(Vector2d position, Genotype genotype, int energy) {
+        // Zwierzę tworzy małe Zwierzę
+        return new Animal(position, genotype, energy, getSimulationConfig());
+    }
+
+    /*@Override
     public Creature reproduce(Creature other) {
         if(!other.getClass().equals(this.getClass())){
             throw new ClassCastException("Can't reproduce different class creatures");
@@ -49,5 +69,5 @@ public class Animal extends Creature {
         Vector2d newPosition = this.getPosition();
 
         return new Animal(newPosition, newEnergy, newGenotype);
-    }
+    }*/
 }

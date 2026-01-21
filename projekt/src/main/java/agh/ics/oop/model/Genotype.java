@@ -1,5 +1,8 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.util.SimulationConfig;
+
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -59,7 +62,7 @@ public class Genotype {
         return gene;
     }
 
-    public Genotype cross(Genotype other, int energyFirst, int energySecond){ //dostajemy genotyp drugiego i ilość energi każdego stworzenia
+    public Genotype cross(Genotype other, int energyFirst, int energySecond, SimulationConfig config){ //dostajemy genotyp drugiego i ilość energi każdego stworzenia
         Genotype stronger;
         Genotype weaker;
         int energyStronger;
@@ -105,7 +108,7 @@ public class Genotype {
         int amountRandomGenes = random.nextInt(genesCount); // ile genów
         Set<Integer> indexes = new HashSet<>();
         while(indexes.size() < amountRandomGenes){
-            int idx = random.nextInt(genesCount);
+            int idx = random.nextInt(config.mutationMax() -  config.mutationMin()) + config.mutationMin();
             if(!indexes.contains(idx)){
                 indexes.add(idx);
                 childGenes.set(idx, MoveDirection.values()[random.nextInt(MoveDirection.values().length)]);
@@ -113,5 +116,13 @@ public class Genotype {
         }
 
         return new Genotype(childGenes);
+    }
+
+    @Override
+    public String toString() {
+        return genes.stream()
+                // zamiast samego obiektu, pobieramy jego wartość (int)
+                .map(gene -> String.valueOf(gene.getValue()))
+                .collect(java.util.stream.Collectors.joining(" "));
     }
 }

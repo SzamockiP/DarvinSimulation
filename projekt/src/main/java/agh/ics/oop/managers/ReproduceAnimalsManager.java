@@ -32,8 +32,12 @@ public class ReproduceAnimalsManager implements ISimulationManager {
                 }
                 if(secondBestAnimal == null) continue;
 
-                Animal newAnimal = (Animal) bestAnimal.reproduce(secondBestAnimal);
-                animalMap.addEntity(newAnimal);
+                if(bestAnimal.getEnergy() >= config.reproductionMinEnergy() &&
+                        config.reproductionMinEnergy() <= secondBestAnimal.getEnergy()){
+                    Animal newAnimal = (Animal) bestAnimal.reproduce(secondBestAnimal);
+                    animalMap.addEntity(newAnimal);
+                }
+
             }
         }
     }

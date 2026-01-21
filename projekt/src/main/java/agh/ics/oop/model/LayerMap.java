@@ -11,8 +11,8 @@ public class LayerMap<T extends Entity> {
 
     public LayerMap(Boundary boundary) {
         this.boundary = boundary;
-        for(int y = 0; y < boundary.upperRight().getY(); y++) {
-            for (int x = 0; x < boundary.upperRight().getX(); x++) {
+        for(int y = 0; y <= boundary.upperRight().getY(); y++) {
+            for (int x = 0; x <= boundary.upperRight().getX(); x++) {
                 entitiesByPosition.put(new Vector2d(x, y), new ArrayList<>());
             }
         }
@@ -56,7 +56,7 @@ public class LayerMap<T extends Entity> {
 
     public void move(Creature creature) {
         Vector2d oldPosition = creature.getPosition();
-        // Assume creature can move on this map layout
+        // Zakładamy, że zwierze może się tu poruszyć
         creature.move(this);
 
         if(!oldPosition.equals(creature.getPosition())) {

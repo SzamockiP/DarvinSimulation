@@ -2,15 +2,26 @@ package agh.ics.oop.managers;
 
 import agh.ics.oop.model.*;
 import agh.ics.oop.model.util.SimulationConfig;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KillAnimalsManager implements ISimulationManager {
     @Override
     public void step(WorldMap map, SimulationConfig config) {
+        List<Animal> deadAnimals = new ArrayList<>();
+
+        // 1. Znajdź martwe
         for(Animal animal : map.getAnimals().getEntities()){
-            if(!animal.isAlive()){
-                map.getAnimals().removeEntity(animal);
-                map.getDeadAnimals().add(animal);
+            if(animal.getEnergy() <= 0 || !animal.isAlive()){ // Upewnij się co do warunku
+                animal.kill(); // Na wszelki wypadek
+                deadAnimals.add(animal);
             }
+        }
+
+        // 2. Usuń je bezpiecznie
+        for(Animal animal : deadAnimals){
+            map.getAnimals().removeEntity(animal);
+            map.addDeadAnimalStats(animal.getAge());
         }
     }
 }

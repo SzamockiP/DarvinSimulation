@@ -1,23 +1,30 @@
 package agh.ics.oop.model;
 import agh.ics.oop.model.Genotype;
+import agh.ics.oop.model.util.SimulationConfig;
 
 public abstract class Creature extends Entity implements IAlive, IMove,IReproduce{
     private MapDirection direction;
     private int energy;
     private boolean isAlive;
     Genotype genotype;
+    private final SimulationConfig simulationConfig;
 
 
-    public Creature(Vector2d position, int initialEnergy, Genotype genotype) {
+    public Creature(Vector2d position, int initialEnergy, Genotype genotype,  SimulationConfig simulationConfig) {
         super(position);
         this.energy = initialEnergy;
         this.genotype = genotype;
         this.direction = MapDirection.NORTH;
         this.isAlive = true;
+        this.simulationConfig = simulationConfig;
     }
 
-    public Creature(Vector2d position, int initialEnergy, int genomeSize) {
-        this(position, initialEnergy, new Genotype(genomeSize));
+    public Creature(Vector2d position, int initialEnergy, int genomeSize, SimulationConfig simulationConfig) {
+        this(position, initialEnergy, new Genotype(genomeSize), simulationConfig);
+    }
+
+    public SimulationConfig getSimulationConfig() {
+        return simulationConfig;
     }
 
     public MapDirection getDirection() {
@@ -88,6 +95,28 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
         }
     }
 
-    // IReproduce
-    public abstract Creature reproduce(Creature other);
+    @Override
+    public Creature reproduce(Creature other) {
+        if(!other.getClass().equals(this.getClass())){
+            throw new ClassCastException("Can't reproduce different class creatures");
+        }
+        SimulationConfig config = getSimulationConfig();
+
+        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy(), config);
+
+        // Energia dziecka i strata rodziców
+        int cost = config.reproductionCost();
+        int newEnergy = 2 * cost;
+
+        this.addEnergy(-cost);
+        other.addEnergy(-cost);
+
+        if (this instanceof Animal) ((Animal) this).addChild();
+        if (other instanceof Animal) ((Animal) other).addChild();
+
+        Vector2d newPosition = this.getPosition();
+
+        return createChild(newPosition, newGenotype, newEnergy);
+    }
+    protected abstract Creature createChild(Vector2d position, Genotype genotype, int energy);
 }
