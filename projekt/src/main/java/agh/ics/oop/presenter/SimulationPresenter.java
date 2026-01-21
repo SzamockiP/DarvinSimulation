@@ -128,6 +128,33 @@ public class SimulationPresenter {
         double cellHeight = mapCanvas.getHeight() / Math.max(1, mapHeight);
 
         // Rysowanie dżungli
+        drawJungle(gc, mapWidth, mapHeight, cellWidth, cellHeight);
+
+        // Trawa
+        drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, cellWidth, cellHeight);
+
+        // Zwierzęta
+        drawEntities(gc, worldMap.getAnimals().getEntities(), Color.RED, cellWidth, cellHeight);
+
+        // Pasożyty
+        drawEntities(gc, worldMap.getParasites().getEntities(), Color.BLACK, cellWidth, cellHeight);
+
+        // Rysowanie siatki (grid)
+        drawGrid(gc, mapWidth, mapHeight, cellWidth, cellHeight);
+    }
+    public void drawGrid(GraphicsContext gc, double mapWidth, double mapHeight,
+                         double cellWidth, double cellHeight) {
+        gc.setStroke(Color.DARKGRAY);
+        gc.setLineWidth(0.2);
+        for (int x = 0; x <= mapWidth; x++) {
+            gc.strokeLine(x * cellWidth, 0, x * cellWidth, mapCanvas.getHeight());
+        }
+        for (int y = 0; y <= mapHeight; y++) {
+            gc.strokeLine(0, y * cellHeight, mapCanvas.getWidth(), y * cellHeight);
+        }
+    }
+    public void drawJungle(GraphicsContext gc, double mapWidth, double mapHeight,
+                         double cellWidth, double cellHeight) {
         int height = (int) mapHeight;
         int jungleHeight = Math.max(1, height / 5);
         int jungleStartY = (height - jungleHeight) / 2;
@@ -138,47 +165,17 @@ public class SimulationPresenter {
                 mapCanvas.getWidth(),           // szerokość (na całą mapę)
                 jungleHeight * cellHeight       // wysokość paska w pikselach
         );
+    }
+    private void drawEntities(GraphicsContext gc, java.util.Collection<? extends Entity> entities,
+                              Color color, double cellWidth, double cellHeight) {
+        gc.setFill(color);
 
-        // Rysowanie Zwierząt
-        // Twoja WorldMap ma warstwy, więc musimy pobrać zwierzęta z animalMap
-        for (Animal animal : worldMap.getAnimals().getEntities()) {
-            gc.setFill(Color.RED); // Zwierzaki na czerwono
-            gc.fillOval(
-                    animal.getPosition().getX() * cellWidth,
-                    animal.getPosition().getY() * cellHeight,
-                    cellWidth, cellHeight
-            );
-        }
+        for (Entity entity : entities) {
+            double x = entity.getPosition().getX() * cellWidth;
+            double y = entity.getPosition().getY() * cellHeight;
 
-        // Rysowanie Roślin (jeśli są)
-        for (Plant plant : worldMap.getPlants().getEntities()) {
-            gc.setFill(Color.DARKGREEN); // Rośliny na ciemnozielono
-            // Rośliny zazwyczaj są kwadratowe
-            gc.fillRect(
-                    plant.getPosition().getX() * cellWidth,
-                    plant.getPosition().getY() * cellHeight,
-                    cellWidth, cellHeight
-            );
-        }
-
-        // Rysowanie Pasożytów (jeśli są)
-        for (Parasite parasite : worldMap.getParasites().getEntities()) {
-            gc.setFill(Color.BLACK);
-            gc.fillOval(
-                    parasite.getPosition().getX() * cellWidth,
-                    parasite.getPosition().getY() * cellHeight,
-                    cellWidth, cellHeight
-            );
-        }
-
-        // Rysowanie siatki (grid)
-        gc.setStroke(Color.DARKGRAY);
-        gc.setLineWidth(0.2);
-        for (int x = 0; x <= mapWidth; x++) {
-            gc.strokeLine(x * cellWidth, 0, x * cellWidth, mapCanvas.getHeight());
-        }
-        for (int y = 0; y <= mapHeight; y++) {
-            gc.strokeLine(0, y * cellHeight, mapCanvas.getWidth(), y * cellHeight);
+            gc.fillOval(x, y, cellWidth, cellHeight);
         }
     }
+
 }

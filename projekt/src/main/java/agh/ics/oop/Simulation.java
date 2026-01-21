@@ -148,4 +148,8 @@ public class Simulation {
             manager.step(worldMap, simulationConfig);
         }
     }
+
+    public void step() {
+        tickSimulation();
+    }
 }

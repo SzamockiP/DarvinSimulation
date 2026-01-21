@@ -101,7 +101,7 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
             throw new ClassCastException("Can't reproduce different class creatures");
         }
 
-        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
+        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy(), simulationConfig);
 
         int newEnergy = 2 * simulationConfig.reproductionCost();
         this.setEnergy(getEnergy() - simulationConfig.reproductionCost());
