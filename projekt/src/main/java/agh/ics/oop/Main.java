@@ -2,6 +2,8 @@ package agh.ics.oop;
 
 import agh.ics.oop.model.Animal;
 import agh.ics.oop.model.Vector2d;
+import agh.ics.oop.model.WorldMap;
+import agh.ics.oop.model.WorldMap;
 import agh.ics.oop.model.util.Boundary;
 import agh.ics.oop.model.util.SimulationConfig;
 
@@ -21,10 +23,16 @@ public class Main {
                 5,
                 8,
                 1,
-                2
+                2,
+                1,
+                1,
+                1,
+                1,
+                5
         );
+        WorldMap map = new WorldMap(simulationConfig.mapSize());
 
-        Simulation simulation = new Simulation(simulationConfig);
+        Simulation simulation = new Simulation(map, simulationConfig);
 
         simulation.runSimulation();
     }

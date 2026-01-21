@@ -56,7 +56,7 @@ public class LayerMap<T extends Entity> {
 
     public void move(Creature creature) {
         Vector2d oldPosition = creature.getPosition();
-        // Assume creature can move on this map layout
+        // Zakładamy, że zwierze może się tu poruszyć
         creature.move(this);
 
         if(!oldPosition.equals(creature.getPosition())) {

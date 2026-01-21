@@ -11,6 +11,12 @@ public record SimulationConfig(
         int startingEnergy,
         int genotypeLength,
         int energyLossDueParasite,
-        int energyLossInPanic
+        int energyLossInPanic,
+        // --- NOWE POLA Z GUI ---
+        int dailyEnergyLoss,      // Koszt życia (energyLossDay)
+        int reproductionMinEnergy,// Min energia do rozmnażania
+        int reproductionCost,     // Koszt rozmnażania (ile energii tracą rodzice)
+        int mutationMin,          // Min liczba mutacji
+        int mutationMax           // Max liczba mutacji
 ) {
 }
