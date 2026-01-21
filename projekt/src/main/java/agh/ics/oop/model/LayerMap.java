@@ -11,8 +11,8 @@ public class LayerMap<T extends Entity> {
 
     public LayerMap(Boundary boundary) {
         this.boundary = boundary;
-        for(int y = 0; y < boundary.upperRight().getY(); y++) {
-            for (int x = 0; x < boundary.upperRight().getX(); x++) {
+        for(int y = 0; y <= boundary.upperRight().getY(); y++) {
+            for (int x = 0; x <= boundary.upperRight().getX(); x++) {
                 entitiesByPosition.put(new Vector2d(x, y), new ArrayList<>());
             }
         }

@@ -20,9 +20,9 @@
         </VBox>
     </top>
 
-    <left>
+    <center>
         <Canvas fx:id="mapCanvas" width="500" height="500" />
-    </left>
+    </center>
 
     <right>
         <VBox alignment="CENTER" spacing="-6" style="-fx-padding: 10;">
@@ -112,10 +112,12 @@
         </VBox>
     </right>
 
-    <bottom>
-        <VBox alignment="CENTER" style="-fx-padding: 20;">
+    <left>
+        <VBox alignment="CENTER" style="-fx-padding: 20;" spacing="10">
+            <Label fx:id="infoLabel" text="Tu pojawią się statystyki" style="-fx-text-fill: blue;"/>
+
             <Button text="Start" onAction="#onSimulationStartClicked"/>
         </VBox>
-    </bottom>
+    </left>
 
 </BorderPane>

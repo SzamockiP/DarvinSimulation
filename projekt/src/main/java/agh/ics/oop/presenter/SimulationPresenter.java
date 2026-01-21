@@ -10,8 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import agh.ics.oop.Simulation;
+import javafx.application.Platform;
 
-public class SimulationPresenter {
+public class SimulationPresenter implements MapChangeListener{
     private WorldMap worldMap;
 
     @FXML
@@ -56,6 +57,26 @@ public class SimulationPresenter {
         System.out.println("Okno załadowane poprawnie!");
     }
 
+    @Override
+    public void mapChanged(WorldMap worldMap, String message) {
+        Platform.runLater(() -> {
+            drawMap();
+
+            int animalsCount = worldMap.getAnimals().getEntities().size();
+            int parasitesCount = worldMap.getParasites().getEntities().size();
+            int plantsCount = worldMap.getPlants().getEntities().size();
+            String avgAnimalLife = String.format("%.2f", worldMap.getAverageAnimalLifeSpan());
+
+            infoLabel.setText(
+                    message +
+                            "\nZwierząt: " + animalsCount +
+                            "\nPasożytów: " + parasitesCount +
+                            "\nRoślin: " + plantsCount +
+                            "\nŚr. życie Zwierząt: " + avgAnimalLife + " dni"
+            );
+        });
+    }
+
     @FXML
     private void onSimulationStartClicked() {
         try {
@@ -87,18 +108,39 @@ public class SimulationPresenter {
                     Integer.parseInt(minEnergyReproduce.getText()), // reproductionMinEnergy
                     Integer.parseInt(energyReproduce.getText()),    // reproductionCost
                     Integer.parseInt(minMutation.getText()),        // mutationMin
-                    Integer.parseInt(maxMutation.getText())         // mutationMax
+                    Integer.parseInt(maxMutation.getText())        // mutationMax
+
             );
 
 
             // Tworzymy mapę o wybranych wymiarach
             this.worldMap = new WorldMap(config.mapSize());
-
             Simulation simulation = new Simulation(worldMap, config);
 
-            System.out.println("Uruchamiam mapę: " + width + "x" + height);
+            simulation.addObserver(this);
+
+            Thread simulationThread = new Thread(() -> {
+                while (true) {
+                    try {
+                        simulation.step();
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        break;
+                    } catch (Exception e) {
+                        // Jeśli wystąpi jakikowiek inny błąd, wypisz go w konsoli
+                        System.err.println("Błąd w symulacji!");
+                        e.printStackTrace();
+
+                        break;// zatrzymaj symulację po błędzie, żeby nie spamować konsoli
+                    }
+                }
+            });
+            simulationThread.setDaemon(true);
+            simulationThread.start();
+
+            /*System.out.println("Uruchamiam mapę: " + width + "x" + height);
             drawMap();
-            infoLabel.setText("Mapa utworzona: " + width + "x" + height);
+            infoLabel.setText("Mapa utworzona: " + width + "x" + height);*/
 
         } catch (NumberFormatException e) {
             // jak ktoś wpisze "ala" zamiast liczby
@@ -111,35 +153,23 @@ public class SimulationPresenter {
 
         GraphicsContext gc = mapCanvas.getGraphicsContext2D();
 
-        // Czyścimy całe płótno
-        gc.clearRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
+        gc.clearRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());// Czyścimy całe płótno
 
-        // 2. Rysujemy tło (Ziemię)
-        gc.setFill(Color.ANTIQUEWHITE);
+        gc.setFill(Color.ANTIQUEWHITE);// Rysujemy tło (Ziemię)
         gc.fillRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
 
         // Obliczamy rozmiar jednej kratki
-        // Musimy wiedzieć, jak duża jest mapa. Pobieramy to z Boundary.
-        // Używamy Math.max(1, ...), żeby uniknąć dzielenia przez zero
         double mapWidth = worldMap.getCurrentBoundary().upperRight().getX();
         double mapHeight = worldMap.getCurrentBoundary().upperRight().getY();
 
-        double cellWidth = mapCanvas.getWidth() / Math.max(1, mapWidth);
+        double cellWidth = mapCanvas.getWidth() / Math.max(1, mapWidth);// Używamy Math.max(1, ...), żeby uniknąć dzielenia przez zero
         double cellHeight = mapCanvas.getHeight() / Math.max(1, mapHeight);
 
-        // Rysowanie dżungli
+        // Rysowanie dżungli, trawy, zwierząt, pasożytów i statki
         drawJungle(gc, mapWidth, mapHeight, cellWidth, cellHeight);
-
-        // Trawa
         drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, cellWidth, cellHeight);
-
-        // Zwierzęta
-        drawEntities(gc, worldMap.getAnimals().getEntities(), Color.RED, cellWidth, cellHeight);
-
-        // Pasożyty
         drawEntities(gc, worldMap.getParasites().getEntities(), Color.BLACK, cellWidth, cellHeight);
-
-        // Rysowanie siatki (grid)
+        drawEntities(gc, worldMap.getAnimals().getEntities(), Color.RED, cellWidth, cellHeight);
         drawGrid(gc, mapWidth, mapHeight, cellWidth, cellHeight);
     }
     public void drawGrid(GraphicsContext gc, double mapWidth, double mapHeight,

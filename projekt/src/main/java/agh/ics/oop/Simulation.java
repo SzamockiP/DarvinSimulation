@@ -12,6 +12,7 @@ public class Simulation {
     private final SimulationConfig simulationConfig;
     private final WorldMap worldMap;
     private final List<ISimulationManager> managers;
+    private final List<MapChangeListener> observers = new ArrayList<>();
 
     public Simulation(WorldMap worldMap, SimulationConfig simulationConfig) {
         this.simulationConfig = simulationConfig;
@@ -149,7 +150,23 @@ public class Simulation {
         }
     }
 
+    public void addObserver(MapChangeListener observer) {// Metoda do rejestrowania obserwatorów
+        observers.add(observer);
+    }
+
+    public void removeObserver(MapChangeListener observer) {// Metoda do usuwania
+        observers.remove(observer);
+    }
+
+    private void notifyObservers(String message) { // Metoda wywołuje mapChanged u każdego obserwatora
+        for (MapChangeListener observer : observers) {
+            observer.mapChanged(worldMap, message);
+        }
+    }
+
     public void step() {
         tickSimulation();
+
+        notifyObservers("Dzień minął");
     }
 }

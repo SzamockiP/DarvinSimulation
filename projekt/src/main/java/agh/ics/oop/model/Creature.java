@@ -100,15 +100,20 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
         if(!other.getClass().equals(this.getClass())){
             throw new ClassCastException("Can't reproduce different class creatures");
         }
+        SimulationConfig config = getSimulationConfig();
 
-        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy(), simulationConfig);
+        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy(), config);
 
-        int newEnergy = 2 * simulationConfig.reproductionCost();
-        this.setEnergy(getEnergy() - simulationConfig.reproductionCost());
-        other.setEnergy(other.getEnergy() - simulationConfig.reproductionCost());
+        // Energia dziecka i strata rodziców
+        int cost = config.reproductionCost();
+        int newEnergy = 2 * cost;
+
+        this.addEnergy(-cost);
+        other.addEnergy(-cost);
 
         Vector2d newPosition = this.getPosition();
 
-        return new Parasite(newPosition, newGenotype, newEnergy, simulationConfig);
+        return createChild(newPosition, newGenotype, newEnergy);
     }
+    protected abstract Creature createChild(Vector2d position, Genotype genotype, int energy);
 }

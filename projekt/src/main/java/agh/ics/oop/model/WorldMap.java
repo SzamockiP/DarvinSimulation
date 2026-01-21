@@ -9,6 +9,8 @@ public class WorldMap {
     private final LayerMap<Parasite> parasiteMap;
     private final List<Animal> deadAnimals = new java.util.ArrayList<>();
     private final Boundary boundary;
+    private long totalDeadAnimalsAge = 0;
+    private int deadAnimalsCount = 0;
 
     public WorldMap(Boundary boundary) {
         this.boundary = boundary;
@@ -35,5 +37,15 @@ public class WorldMap {
 
     public Boundary getCurrentBoundary() {
         return boundary;
+    }
+
+    public void addDeadAnimalStats(int age) {
+        totalDeadAnimalsAge += age;
+        deadAnimalsCount++;
+    }
+
+    public double getAverageAnimalLifeSpan() {
+        if (deadAnimalsCount == 0) return 0.0;
+        return (double) totalDeadAnimalsAge / deadAnimalsCount;
     }
 }

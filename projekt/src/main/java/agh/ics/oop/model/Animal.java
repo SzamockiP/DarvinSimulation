@@ -24,6 +24,12 @@ public class Animal extends Creature {
     public void makeOlder(){
         this.age++;
     }
+    public int  getAge(){
+        return age;
+    }
+    public int getChildrenAmount(){
+        return childrenAmount;
+    }
 
     public void addEnergy(int delta){
         this.setEnergy( this.getEnergy() + delta);
@@ -31,12 +37,18 @@ public class Animal extends Creature {
 
     @Override
     public void move(LayerMap map){
-        if(this.isAlive()) return;
+        if(!this.isAlive()) return;
 
         super.move(map);
 
-        this.addEnergy(-1);
+        this.addEnergy(-getSimulationConfig().dailyEnergyLoss());
         this.makeOlder();
+    }
+
+    @Override
+    protected Creature createChild(Vector2d position, Genotype genotype, int energy) {
+        // Zwierzę tworzy małe Zwierzę
+        return new Animal(position, genotype, energy, getSimulationConfig());
     }
 
     /*@Override

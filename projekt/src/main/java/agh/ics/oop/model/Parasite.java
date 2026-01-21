@@ -10,12 +10,16 @@ public class Parasite extends Creature implements IMove,IReproduce {
 
     public Parasite(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
         super(position, simulationConfig.startingEnergy(), genotype, simulationConfig);
+        panicking =  false;
         //this.simulationConfig = simulationConfig;
+        daysWithHost = 0;
     }
 
     public Parasite(Vector2d position, Genotype genotype, int energy, SimulationConfig simulationConfig) {
         //this.simulationConfig = simulationConfig;
         super(position, energy, genotype, simulationConfig);
+        panicking =  false;
+        daysWithHost = 0;
     }
 
     public void setHost(Animal host) {
@@ -84,9 +88,16 @@ public class Parasite extends Creature implements IMove,IReproduce {
         }
         else {
             super.move(map);
-            this.addEnergy(-getSimulationConfig().energyLossInPanic());
+            if(panicking) this.addEnergy(-getSimulationConfig().energyLossInPanic());
+            else this.addEnergy(-getSimulationConfig().dailyEnergyLoss());
         }
 
+    }
+
+    @Override
+    protected Creature createChild(Vector2d position, Genotype genotype, int energy) {
+        // Zwierzę tworzy małe Zwierzę
+        return new Parasite(position, genotype, energy, getSimulationConfig());
     }
 
     /*@Override
