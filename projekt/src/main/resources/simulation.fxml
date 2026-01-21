@@ -121,6 +121,5 @@
         </VBox>
     </left>
     <bottom>
-        <Button text="Start" onAction="#onSimulationStartClicked"/>
-    </bottom>
+        <Button text="Start" onAction="#onSimulationStartClicked" BorderPane.alignment="CENTER"/>    </bottom>
 </BorderPane>
