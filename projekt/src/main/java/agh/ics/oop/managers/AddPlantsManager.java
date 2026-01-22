@@ -12,7 +12,7 @@ public class AddPlantsManager implements ISimulationManager {
     public void step(WorldMap map, SimulationConfig config) {
         LayerMap<Plant> plantMap = map.getPlants();
 
-        for(int i=0; i <= config.plantPerDay(); i++){
+        for(int i=0; i < config.plantPerDay(); i++){
             Vector2d position = getRandomPlantPosition(map, config);
 
             if(position != null) plantMap.addEntity(new Plant(position));

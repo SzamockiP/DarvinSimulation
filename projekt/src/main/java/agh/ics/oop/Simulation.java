@@ -51,7 +51,7 @@ public class Simulation {
                     new Parasite(
                             position,
                             new Genotype(this.simulationConfig.genotypeLength()),
-                            this.simulationConfig.startingEnergy(),
+                            this.simulationConfig.startingParasiteEnergy(),
                             this.simulationConfig
                     )
             );

@@ -28,6 +28,7 @@ public class Main {
                 1,
                 1,
                 1,
+                5,
                 5
         );
         WorldMap map = new WorldMap(simulationConfig.mapSize());

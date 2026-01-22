@@ -17,6 +17,7 @@ public record SimulationConfig(
         int reproductionMinEnergy,// Min energia do rozmnażania
         int reproductionCost,     // Koszt rozmnażania (ile energii tracą rodzice)
         int mutationMin,          // Min liczba mutacji
-        int mutationMax           // Max liczba mutacji
+        int mutationMax,          // Max liczba mutacji
+        int startingParasiteEnergy // NOWE: Startowa energia pasożytów
 ) {
 }

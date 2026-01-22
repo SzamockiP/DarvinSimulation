@@ -54,6 +54,8 @@ public class SimulationPresenter implements MapChangeListener{
     private TextField energyPanickingParasite;
     @FXML
     private TextField energyTakenParasite;
+    @FXML
+    private TextField startParasiteEnergy;
 
     public void initialize() {
         // Ta metoda uruchamia się sama po załadowaniu okna
@@ -110,6 +112,8 @@ public class SimulationPresenter implements MapChangeListener{
         ));
     }
 
+    private Simulation simulation;
+
     @FXML
     private void onSimulationStartClicked() {
         try {
@@ -126,9 +130,9 @@ public class SimulationPresenter implements MapChangeListener{
             SimulationConfig config = new SimulationConfig(
                     mapBoundary,
                     jungleBoundary,
-                    Integer.parseInt(plantCount.getText()),        // plantPerDay
+                    Integer.parseInt(dailyPlantCount.getText()),   // plantPerDay
                     Integer.parseInt(plantsEnergy.getText()),      // energyPerPlant
-                    Integer.parseInt(dailyPlantCount.getText()),        // startingPlants (zakładam to samo co plantPerDay na start)
+                    Integer.parseInt(plantCount.getText()),        // startingPlants
                     Integer.parseInt(animalCount.getText()),       // startingAnimals
                     Integer.parseInt(parasiteCount.getText()),     // startingParasites
                     Integer.parseInt(startAnimalEnergy.getText()), // startingEnergy
@@ -141,47 +145,70 @@ public class SimulationPresenter implements MapChangeListener{
                     Integer.parseInt(minEnergyReproduce.getText()), // reproductionMinEnergy
                     Integer.parseInt(energyReproduce.getText()),    // reproductionCost
                     Integer.parseInt(minMutation.getText()),        // mutationMin
-                    Integer.parseInt(maxMutation.getText())        // mutationMax
 
+                    Integer.parseInt(maxMutation.getText()),        // mutationMax
+                    Integer.parseInt(startParasiteEnergy.getText()) // startingParasiteEnergy
             );
 
 
             // Tworzymy mapę o wybranych wymiarach
             this.worldMap = new WorldMap(config.mapSize());
             this.statisticsEngine = new StatisticsEngine(worldMap);
-            Simulation simulation = new Simulation(worldMap, config);
+            this.simulation = new Simulation(worldMap, config);
 
             simulation.addObserver(this);
 
-            isSimulationRunning = true;
+            isSimulationRunning = false; // Start paused
 
-            Thread simulationThread = new Thread(() -> {
-                while (true) {
-                    try {
-                        // --- ZMIANA TUTAJ ---
-                        // Jeśli symulacja jest "włączona", robimy krok.
-                        // Jeśli jest "zatrzymana", pętla tylko czeka (sleep), nie zmieniając mapy.
-                        if (isSimulationRunning) {
-                            simulation.step();
+            // Don't start a new thread every time we click generate
+            // Ideally we should manage the thread better, but for now let's just create a new one if not exists or if we want to restart logic
+            // But since "Generate" implies reset, we are fine creating new objects.
+            // The thread logic below needs to be careful not to spawn multiple threads running in background for old simulations.
+            // For simplicity in this lab scope, let's assume one simulation at a time or we just spawn a thread that checks 'isRunning' and 'simulation' object.
+            
+            // To be safe and simple: Let's create a thread that runs WHATEVER simulation is current
+            if (activeThread == null || !activeThread.isAlive()) {
+                 activeThread = new Thread(() -> {
+                    while (true) {
+                        try {
+                            if (isSimulationRunning && simulation != null) {
+                                simulation.step();
+                            }
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            break;
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-
-                        Thread.sleep(300); // Czekamy zawsze, żeby nie zarżnąć procesora
-                        // --------------------
-
-                    } catch (InterruptedException e) {
-                        break;
-                    } catch (Exception e) {
-                        System.err.println("Błąd w symulacji!");
-                        e.printStackTrace();
-                        break;
                     }
-                }
+                });
+                activeThread.setDaemon(true);
+                activeThread.start();
+            }
+            
+            // Force initial draw
+            Platform.runLater(() -> {
+                drawMap(); 
+                // Initial stats might be empty or initial state
+                mapChanged(worldMap, "Mapa wygenerowana");
             });
-            simulationThread.setDaemon(true);
-            simulationThread.start();
+
         } catch (NumberFormatException e) {
-            // jak ktoś wpisze "ala" zamiast liczby
             infoLabel.setText("Błąd: Wpisz poprawne liczby!");
+        }
+    }
+    
+    private Thread activeThread;
+
+    @FXML
+    private void onNextDayClicked() {
+        if (simulation != null) {
+            // Run single step in background to not freeze UI, but it's fast enough usually
+            // Better to run on thread or just call step (it's synchronized usually or fast)
+            // step() calls notifyObservers which does Platform.runLater, so it is safe to call from here roughly
+             new Thread(() -> {
+                 simulation.step();
+             }).start();
         }
     }
 

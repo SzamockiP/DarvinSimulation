@@ -24,7 +24,13 @@ class ParasiteTest {
              20, // starting energy
              5, // genome len
              5, // energy loss parasite
-             2 // energy loss panic
+             2, // energy loss panic
+             1, // dailyEnergyLoss
+             1, // reproductionMinEnergy
+             1, // reproductionCost
+             1, // mutationMin
+             1, // mutationMax
+             10 // startingParasiteEnergy
          );
     }
 

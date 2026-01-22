@@ -62,6 +62,10 @@
                         <Label text="Enegii zwierząt: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
                         <TextField fx:id="startAnimalEnergy" text="10" maxWidth="60"/>
                     </VBox>
+                    <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
+                        <Label text="Energia pasożytów: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="startParasiteEnergy" text="10" maxWidth="60"/>
+                    </VBox>
                 </HBox>
             </VBox>
             <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10;">
@@ -118,8 +122,9 @@
 
             <Button text="STOP" onAction="#onStopClicked" style="-fx-background-color: red; -fx-text-fill: white;"/>
             <Button text="START (Wznów)" onAction="#onResumeClicked" style="-fx-background-color: green; -fx-text-fill: white;"/>
+            <Button text="Następny dzień" onAction="#onNextDayClicked" style="-fx-background-color: blue; -fx-text-fill: white;"/>
         </VBox>
     </left>
     <bottom>
-        <Button text="Start" onAction="#onSimulationStartClicked" BorderPane.alignment="CENTER"/>    </bottom>
+        <Button text="Generuj mapę" onAction="#onSimulationStartClicked" BorderPane.alignment="CENTER"/>    </bottom>
 </BorderPane>

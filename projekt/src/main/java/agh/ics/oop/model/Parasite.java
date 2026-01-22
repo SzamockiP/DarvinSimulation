@@ -80,7 +80,9 @@ public class Parasite extends Creature implements IMove,IReproduce {
 
             // ustaw pozycję i zabierz hostowi energię
             this.setPosition(newPosition);
-            this.host.addEnergy(-getSimulationConfig().energyLossDueParasite());
+            int stolenEnergy = getSimulationConfig().energyLossDueParasite();
+            this.host.addEnergy(-stolenEnergy);
+            this.addEnergy(stolenEnergy);
 
             if(this.host.getEnergy() <= 0){
                 this.host.kill();
