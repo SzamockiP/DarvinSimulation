@@ -35,7 +35,7 @@ public class StatisticsEngine {
         double avgChildren = 0.0;
         if (!animals.isEmpty()) {
             avgChildren = animals.stream()
-                    .mapToInt(Animal::getChildrenAmount)
+                    .mapToInt(Animal::getLivingChildrenAmount)
                     .average()
                     .orElse(0.0);
         }
@@ -43,6 +43,9 @@ public class StatisticsEngine {
         int freeFields = calculateFreeFields(); //wolne pola
 
         List<Genotype> popularGenotypes = calculatePopularGenotypes(animals);
+
+        long attachedCount = parasites.stream().filter(p -> p.getHost() != null).count();
+        int panickingCount = parasiteCount - (int) attachedCount;
 
         return new SimulationStatistics(
                 animalCount,
@@ -52,7 +55,9 @@ public class StatisticsEngine {
                 popularGenotypes,
                 avgEnergy,
                 avgLifeSpan,
-                avgChildren
+                avgChildren,
+                (int) attachedCount,
+                panickingCount
         );
     }
 

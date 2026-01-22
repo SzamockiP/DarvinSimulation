@@ -92,7 +92,7 @@ public class SimulationPresenter implements MapChangeListener{
                 %s
                 Zwierząt: %d
                 Roślin: %d
-                Pasożytów: %d
+                Pasożytów: %d (Przyczepione: %d, Panikujące: %d)
                 Wolne pola: %d
                 Śr. energia: %.2f
                 Śr. długość życia (martwe): %.2f
@@ -104,6 +104,8 @@ public class SimulationPresenter implements MapChangeListener{
                 stats.animalCount(),
                 stats.plantCount(),
                 stats.parasiteCount(),
+                stats.attachedParasiteCount(),
+                stats.panickingParasiteCount(),
                 stats.freeFieldsCount(),
                 stats.averageEnergy(),
                 stats.averageLifeSpan(),
@@ -137,8 +139,8 @@ public class SimulationPresenter implements MapChangeListener{
                     Integer.parseInt(parasiteCount.getText()),     // startingParasites
                     Integer.parseInt(startAnimalEnergy.getText()), // startingEnergy
                     Integer.parseInt(geneLength.getText()),        // genotypeLength
-                    10,                                            // energyLossDueParasite (Domyślne - brak w GUI)
-                    5,                                             // energyLossInPanic (Domyślne - brak w GUI)
+                    Integer.parseInt(energyTakenParasite.getText()), // energyLossDueParasite
+                    Integer.parseInt(energyPanickingParasite.getText()), // energyLossInPanic
 
                     // --- NOWE POLA ---
                     Integer.parseInt(energyLossDay.getText()),      // dailyEnergyLoss
@@ -231,9 +233,9 @@ public class SimulationPresenter implements MapChangeListener{
 
         // Rysowanie dżungli, trawy, zwierząt, pasożytów i statki
         drawJungle(gc, mapWidth, mapHeight, cellWidth, cellHeight);
-        drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, cellWidth, cellHeight);
-        drawEntities(gc, worldMap.getParasites().getEntities(), Color.BLACK, cellWidth, cellHeight);
-        drawEntities(gc, worldMap.getAnimals().getEntities(), Color.RED, cellWidth, cellHeight);
+        drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, cellWidth, cellHeight, true, 1.0);
+        drawEntities(gc, worldMap.getAnimals().getEntities(), Color.RED, cellWidth, cellHeight, false, 1.0);
+        drawEntities(gc, worldMap.getParasites().getEntities(), Color.BLACK, cellWidth, cellHeight, false, 0.5);
         drawGrid(gc, mapWidth, mapHeight, cellWidth, cellHeight);
     }
     public void drawGrid(GraphicsContext gc, double mapWidth, double mapHeight,
@@ -261,14 +263,30 @@ public class SimulationPresenter implements MapChangeListener{
         );
     }
     private void drawEntities(GraphicsContext gc, java.util.Collection<? extends Entity> entities,
-                              Color color, double cellWidth, double cellHeight) {
+                              Color color, double cellWidth, double cellHeight, boolean isSquare, double scale) {
         gc.setFill(color);
 
         for (Entity entity : entities) {
             double x = entity.getPosition().getX() * cellWidth;
             double y = entity.getPosition().getY() * cellHeight;
 
-            gc.fillOval(x, y, cellWidth, cellHeight);
+            if (isSquare) {
+                // Square filling the cell
+                gc.fillRect(x, y, cellWidth, cellHeight);
+            } else {
+                // Circle
+                if (scale < 1.0) {
+                    // Centered small circle (for parasite)
+                    double width = cellWidth * scale;
+                    double height = cellHeight * scale;
+                    double offsetX = (cellWidth - width) / 2;
+                    double offsetY = (cellHeight - height) / 2;
+                    gc.fillOval(x + offsetX, y + offsetY, width, height);
+                } else {
+                    // Full circle (animal)
+                    gc.fillOval(x, y, cellWidth, cellHeight);
+                }
+            }
         }
     }
 
