@@ -17,6 +17,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
     private Simulation simulation;
     private volatile boolean isSimulationRunning = false;
     private Thread activeThread;
+    private final java.util.concurrent.atomic.AtomicInteger simulationDelay = new java.util.concurrent.atomic.AtomicInteger(300);
 
     @FXML
     private Canvas mapCanvas;
@@ -39,6 +40,10 @@ public class SimulationWindowPresenter implements MapChangeListener {
         Platform.runLater(() -> {
             drawMap();
             mapChanged(worldMap, "Dzień: 0");
+            
+            // gdy zmienia się wartość w okienku, zmienna w tle sama się zaktualizuje
+            speedSpinner.valueProperty().addListener((obs, oldVal, newVal) -> simulationDelay.set(newVal));
+            simulationDelay.set(speedSpinner.getValue()); // Ustawienie początkowe
         });
         
         startSimulationThread();
@@ -48,32 +53,11 @@ public class SimulationWindowPresenter implements MapChangeListener {
         activeThread = new Thread(() -> {
             while (true) {
                 try {
-                    // Spinner might be updated on FX thread, reading it from background thread might be unsafe or throw exception?
-                    // Usually properties are better access via Platform.runLater or binding, but for simple int value strictly speaking FX controls are not thread safe.
-                    // However, getValue() usually just reads a property. Let's try. If it fails, we wrap in FutureTask or similar.
-                    // Safer: Read value in atomic variable updated by listener?
-                    // Or simply access it cautiously.
-                    // Simplest: Use Platform.runLater to read it into a volatile/atomic or just read it (often works for read).
-                    // Correct way:
-                    /*
-                    final java.util.concurrent.atomic.AtomicLong delayRef = new java.util.concurrent.atomic.AtomicLong(300);
-                    Platform.runLater(() -> delayRef.set(speedSpinner.getValue()));
-                     */
-                    // But we want it inside the loop.
-                    
-                    final java.util.concurrent.FutureTask<Integer> query = new java.util.concurrent.FutureTask<>(() -> speedSpinner.getValue());
-                    Platform.runLater(query);
-                    long delay = 300;
-                    try {
-                        delay = query.get();
-                    } catch (Exception e) {
-
-                    }
-
                     if (isSimulationRunning && simulation != null) {
                         simulation.step();
                     }
-                    Thread.sleep(delay);
+                    // Czytamy bezpieczną stałą, którą aktualizuje listener
+                    Thread.sleep(simulationDelay.get());
                 } catch (InterruptedException e) {
                     break;
                 } catch (Exception e) {
