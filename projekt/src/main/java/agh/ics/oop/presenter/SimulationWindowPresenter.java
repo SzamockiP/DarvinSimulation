@@ -242,6 +242,29 @@ public class SimulationWindowPresenter implements MapChangeListener {
             gc.fillOval(eyeDist - eyeSize / 2, eyeSep - eyeSize / 2, eyeSize, eyeSize);
 
             gc.restore();
+
+            int energy = creature.getEnergy(); // Zakładam, że klasa Creature ma tę metodę publiczną
+            SimulationConfig config = creature.getSimulationConfig();
+
+            // 2. Dobieramy kolor
+            if (energy <= config.dailyEnergyLoss() * 2) {
+                gc.setFill(Color.RED);
+            } else if (energy <= config.dailyEnergyLoss() * 4) {
+                gc.setFill(Color.YELLOW);
+            } else {
+                gc.setFill(Color.GREEN);
+            }
+
+            double barWidth = cellWidth * 0.8;       // Pasek na 80% szerokości pola
+            double barHeight = Math.max(2, cellHeight * 0.15); // Pasek ma 15% wysokości pola (min 2px)
+            double barX = x + (cellWidth - barWidth) / 2; // Centrujemy pasek w poziomie względem pola
+
+            // Rysujemy pasek na samej górze pola (lub lekko nad nim, np. y - barHeight)
+            // Tutaj rysuję go na górze wewnątrz pola, żeby nie nachodził na sąsiadów wyżej
+            double barY = y;
+            gc.fillRect(barX, barY, barWidth, barHeight);
+
+            gc.restore();
         }
     }
 
