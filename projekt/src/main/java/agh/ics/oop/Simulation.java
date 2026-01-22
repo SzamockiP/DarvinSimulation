@@ -164,9 +164,11 @@ public class Simulation {
         }
     }
 
+    private int day = 0;
+
     public void step() {
         tickSimulation();
-
-        notifyObservers("Dzień minął");
+        day++;
+        notifyObservers("Dzień: " + day);
     }
 }
