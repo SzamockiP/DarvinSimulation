@@ -12,7 +12,9 @@ import agh.ics.oop.Simulation;
 import javafx.application.Platform;
 import javafx.scene.paint.Paint;
 
+import java.io.File;
 import java.util.Set;
+import agh.ics.oop.presenter.StatisticsLogger;
 
 public class SimulationWindowPresenter implements MapChangeListener {
     private WorldMap worldMap;
@@ -23,21 +25,22 @@ public class SimulationWindowPresenter implements MapChangeListener {
     private final java.util.concurrent.atomic.AtomicInteger simulationDelay = new java.util.concurrent.atomic.AtomicInteger(300);
     String topGenotype;
     Set<Vector2d> mostPlacedGrass;
+    private StatisticsLogger statisticsLogger; //
 
-    @FXML
-    private Canvas mapCanvas;
-    @FXML
-    private Label dayLabel;
-    @FXML
-    private Label infoLabel;
+    @FXML private Canvas mapCanvas;
+    @FXML private Label dayLabel;
+    @FXML private Label infoLabel;
 
-    @FXML
-    private javafx.scene.control.Spinner<Integer> speedSpinner;
+    @FXML private javafx.scene.control.Spinner<Integer> speedSpinner;
 
     public void setSimulationConfig(SimulationConfig config) {
+        String folderName = "stats";
+        String fileName = "symulacja_" + System.currentTimeMillis() + ".csv";
+
         this.worldMap = new WorldMap(config.mapSize());
         this.statisticsEngine = new StatisticsEngine(worldMap);
         this.simulation = new Simulation(worldMap, config);
+        this.statisticsLogger = new StatisticsLogger(folderName + File.separator + fileName);
 
         simulation.addObserver(this);
 
@@ -95,6 +98,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
         }
     }
 
+
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
         statisticsEngine.update();
@@ -105,6 +109,10 @@ public class SimulationWindowPresenter implements MapChangeListener {
             this.topGenotype = stats.mostPopularGenotypes().get(0).toString();
         } else {
             this.topGenotype = null;
+        }
+
+        if (statisticsLogger != null) {
+            statisticsLogger.log(stats);
         }
 
         // Wysyłamy do GUI tylko gotowy wynik
@@ -200,7 +208,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
                          double cellWidth, double cellHeight) {
         if (mostPlacedGrass == null || mostPlacedGrass.isEmpty()) return;
 
-        gc.setFill(Color.rgb(255, 0, 0, 0.4));// Ustawiamy kolor wyróżnienia na półprzezroczysty czerwony
+        gc.setFill(Color.LIGHTYELLOW);// Ustawiamy kolor wyróżnienia na półprzezroczysty czerwony
 
         for (Vector2d position : mostPlacedGrass) {
             double logicX = position.getX();
