@@ -164,9 +164,9 @@ public class SimulationWindowPresenter implements MapChangeListener {
         double cellHeight = mapCanvas.getHeight() / Math.max(1, mapHeight);
 
         drawJungle(gc, mapWidth, mapHeight, cellWidth, cellHeight);
-        drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, cellWidth, cellHeight, true, 1.0);
-        drawEntities(gc, worldMap.getAnimals().getEntities(), Color.RED, cellWidth, cellHeight, false, 1.0);
-        drawEntities(gc, worldMap.getParasites().getEntities(), Color.BLACK, cellWidth, cellHeight, false, 0.5);
+        drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, mapHeight, cellWidth, cellHeight);
+        drawCreatures(gc, worldMap.getAnimals().getEntities(), Color.BROWN, Color.BLACK, mapHeight, cellWidth, cellHeight, 1.0);
+        drawCreatures(gc, worldMap.getParasites().getEntities(), Color.BLACK, Color.BLUE, mapHeight, cellWidth, cellHeight, 0.5);
         drawGrid(gc, mapWidth, mapHeight, cellWidth, cellHeight);
     }
     
@@ -187,36 +187,82 @@ public class SimulationWindowPresenter implements MapChangeListener {
         int height = (int) mapHeight;
         int jungleHeight = Math.max(1, height / 5);
         int jungleStartY = (height - jungleHeight) / 2;
+        
+        // Inverted Y axis
+        // Top visual Y = (mapHeight - (jungleStartY + jungleHeight)) * cellHeight
+        double visualY = (mapHeight - jungleStartY - jungleHeight) * cellHeight;
+
         gc.setFill(Color.LIGHTGREEN);
         gc.fillRect(
                 0,                              
-                jungleStartY * cellHeight,     
+                visualY,     
                 mapCanvas.getWidth(),          
                 jungleHeight * cellHeight       
         );
     }
     
     private void drawEntities(GraphicsContext gc, java.util.Collection<? extends Entity> entities,
-                              Color color, double cellWidth, double cellHeight, boolean isSquare, double scale) {
+                               Color color, double mapHeight, double cellWidth, double cellHeight) {
         gc.setFill(color);
 
         for (Entity entity : entities) {
-            double x = entity.getPosition().getX() * cellWidth;
-            double y = entity.getPosition().getY() * cellHeight;
+            double logicX = entity.getPosition().getX();
+            double logicY = entity.getPosition().getY();
+            
+            // Invert Y
+            double visualY = mapHeight - 1 - logicY;
+            
+            double x = logicX * cellWidth;
+            double y = visualY * cellHeight;
 
-            if (isSquare) {
-                gc.fillRect(x, y, cellWidth, cellHeight);
-            } else {
-                if (scale < 1.0) {
-                    double width = cellWidth * scale;
-                    double height = cellHeight * scale;
-                    double offsetX = (cellWidth - width) / 2;
-                    double offsetY = (cellHeight - height) / 2;
-                    gc.fillOval(x + offsetX, y + offsetY, width, height);
-                } else {
-                    gc.fillOval(x, y, cellWidth, cellHeight);
-                }
-            }
+            gc.fillRect(x, y, cellWidth, cellHeight);
+        }
+    }
+
+    private void drawCreatures(GraphicsContext gc, java.util.Collection<? extends Creature> creatures,
+                               Color bodyColor, Color eyeColor, double mapHeight, double cellWidth, double cellHeight, double scale) {
+        for (Creature creature : creatures) {
+            double logicX = creature.getPosition().getX();
+            double logicY = creature.getPosition().getY();
+            
+            // Invert Y
+            double visualY = mapHeight - 1 - logicY;
+            
+            double x = logicX * cellWidth;
+            double y = visualY * cellHeight;
+
+            // Compute body size and positioning
+            double width = cellWidth * scale;
+            double height = cellHeight * scale;
+            double offsetX = (cellWidth - width) / 2;
+            double offsetY = (cellHeight - height) / 2;
+            double centerX = x + cellWidth / 2;
+            double centerY = y + cellHeight / 2;
+
+            // Draw Body
+            gc.setFill(bodyColor);
+            gc.fillOval(x + offsetX, y + offsetY, width, height);
+
+            // Draw Eyes (Directional)
+            Vector2d dir = creature.getDirection().getUnitVector();
+            // Invert Y in direction vector for visual rotation
+            // Logic (0,1) -> Visual Up -> -90 deg
+            double angle = Math.toDegrees(Math.atan2(-dir.getY(), dir.getX()));
+
+            gc.save();
+            gc.translate(centerX, centerY);
+            gc.rotate(angle);
+
+            // Draw eyes facing "Right" (0 deg) relative to rotated frame
+            gc.setFill(eyeColor);
+            double eyeSize = width * 0.20; // 20% size
+            double eyeDist = width * 0.30; // 30% distance forward
+            double eyeSep = width * 0.20;  // 20% distance sideways
+
+            gc.fillOval(eyeDist - eyeSize / 2, -eyeSep - eyeSize / 2, eyeSize, eyeSize);
+            gc.fillOval(eyeDist - eyeSize / 2, eyeSep - eyeSize / 2, eyeSize, eyeSize);
+
+            gc.restore();
         }
     }
 
