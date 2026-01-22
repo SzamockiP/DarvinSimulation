@@ -10,6 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import agh.ics.oop.Simulation;
 import javafx.application.Platform;
+import javafx.scene.paint.Paint;
+
+import java.io.File;
+import java.util.Set;
+import agh.ics.oop.presenter.StatisticsLogger;
 
 public class SimulationWindowPresenter implements MapChangeListener {
     private WorldMap worldMap;
@@ -18,21 +23,24 @@ public class SimulationWindowPresenter implements MapChangeListener {
     private volatile boolean isSimulationRunning = false;
     private Thread activeThread;
     private final java.util.concurrent.atomic.AtomicInteger simulationDelay = new java.util.concurrent.atomic.AtomicInteger(300);
+    String topGenotype;
+    Set<Vector2d> mostPlacedGrass;
+    private StatisticsLogger statisticsLogger; //
 
-    @FXML
-    private Canvas mapCanvas;
-    @FXML
-    private Label dayLabel;
-    @FXML
-    private Label infoLabel;
+    @FXML private Canvas mapCanvas;
+    @FXML private Label dayLabel;
+    @FXML private Label infoLabel;
 
-    @FXML
-    private javafx.scene.control.Spinner<Integer> speedSpinner;
+    @FXML private javafx.scene.control.Spinner<Integer> speedSpinner;
 
     public void setSimulationConfig(SimulationConfig config) {
+        String folderName = "stats";
+        String fileName = "symulacja_" + System.currentTimeMillis() + ".csv";
+
         this.worldMap = new WorldMap(config.mapSize());
         this.statisticsEngine = new StatisticsEngine(worldMap);
         this.simulation = new Simulation(worldMap, config);
+        this.statisticsLogger = new StatisticsLogger(folderName + File.separator + fileName);
 
         simulation.addObserver(this);
 
@@ -90,9 +98,22 @@ public class SimulationWindowPresenter implements MapChangeListener {
         }
     }
 
+
     @Override
     public void mapChanged(WorldMap worldMap, String message) {
+        statisticsEngine.update();
         SimulationStatistics stats = statisticsEngine.calculate();
+        this.mostPlacedGrass = statisticsEngine.getFieldsWithMostPlantGrowth();
+
+        if (!stats.mostPopularGenotypes().isEmpty()) {
+            this.topGenotype = stats.mostPopularGenotypes().get(0).toString();
+        } else {
+            this.topGenotype = null;
+        }
+
+        if (statisticsLogger != null) {
+            statisticsLogger.log(stats);
+        }
 
         // Wysyłamy do GUI tylko gotowy wynik
         Platform.runLater(() -> {
@@ -103,7 +124,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
     }
 
     private void updateStatsLabel(SimulationStatistics stats) {
-        String topGenotype = stats.mostPopularGenotypes().isEmpty() ? "-" : stats.mostPopularGenotypes().get(0).toString();
+        this.topGenotype = stats.mostPopularGenotypes().isEmpty() ? "-" : stats.mostPopularGenotypes().get(0).toString();
 
         infoLabel.setText(String.format(
                 """
@@ -148,6 +169,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
         double cellHeight = mapCanvas.getHeight() / Math.max(1, mapHeight);
 
         drawJungle(gc, mapWidth, mapHeight, cellWidth, cellHeight);
+        drawGoodSpots(gc, mapWidth, mapHeight, cellWidth, cellHeight);
         drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, mapHeight, cellWidth, cellHeight);
         drawCreatures(gc, worldMap.getAnimals().getEntities(), Color.BROWN, Color.BLACK, mapHeight, cellWidth, cellHeight, 1.0);
         drawCreatures(gc, worldMap.getParasites().getEntities(), Color.BLACK, Color.BLUE, mapHeight, cellWidth, cellHeight, 0.5);
@@ -182,14 +204,37 @@ public class SimulationWindowPresenter implements MapChangeListener {
                 jungleHeight * cellHeight       
         );
     }
+    public void drawGoodSpots(GraphicsContext gc, double mapWidth, double mapHeight,
+                         double cellWidth, double cellHeight) {
+        if (mostPlacedGrass == null || mostPlacedGrass.isEmpty()) return;
+
+        gc.setFill(Color.LIGHTYELLOW);// Ustawiamy kolor wyróżnienia na półprzezroczysty czerwony
+
+        for (Vector2d position : mostPlacedGrass) {
+            double logicX = position.getX();
+            double logicY = position.getY();
+
+            double visualY = mapHeight - 1 - logicY;
+            double x = logicX * cellWidth;
+            double y = visualY * cellHeight;
+
+            gc.fillRect(x, y, cellWidth, cellHeight);
+        }
+    }
     
     private void drawEntities(GraphicsContext gc, java.util.Collection<? extends Entity> entities,
                                Color color, double mapHeight, double cellWidth, double cellHeight) {
         gc.setFill(color);
 
         for (Entity entity : entities) {
+            gc.setFill(color);
             double logicX = entity.getPosition().getX();
             double logicY = entity.getPosition().getY();
+
+            Vector2d position = entity.getPosition();
+            if (mostPlacedGrass != null && mostPlacedGrass.contains(position)) {
+                gc.setFill(Color.LAWNGREEN);
+            }
             
             double visualY = mapHeight - 1 - logicY;
             
@@ -220,7 +265,12 @@ public class SimulationWindowPresenter implements MapChangeListener {
             double centerY = y + cellHeight / 2;
 
             // Rysowanie ciała
-            gc.setFill(bodyColor);
+            String currentGenotype = creature.getGenotype().toString();
+            if (topGenotype != null && topGenotype.equals(currentGenotype)) {
+                gc.setFill(Color.BLUEVIOLET);
+            } else {
+                gc.setFill(bodyColor);
+            }
             gc.fillOval(x + offsetX, y + offsetY, width, height);
 
             // Rysowanie oczu
