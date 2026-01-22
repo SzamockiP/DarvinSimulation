@@ -12,7 +12,7 @@ public class AddPlantsManager implements ISimulationManager {
     public void step(WorldMap map, SimulationConfig config) {
         LayerMap<Plant> plantMap = map.getPlants();
 
-        for(int i=0; i <= config.plantPerDay(); i++){
+        for(int i=0; i < config.plantPerDay(); i++){
             Vector2d position = getRandomPlantPosition(map, config);
 
             if(position != null) plantMap.addEntity(new Plant(position));
@@ -35,8 +35,8 @@ public class AddPlantsManager implements ISimulationManager {
         List<Vector2d> freeSteppeSpots = new ArrayList<>();
 
         // Przechodzimy po całej mapie i sprawdzamy, gdzie nie ma trawy
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int x = 0; x <= width; x++) {
+            for (int y = 0; y <= height; y++) {
                 Vector2d pos = new Vector2d(x, y);
 
                 if (!map.getPlants().isOccupied(pos)) {// Jeśli na danej pozycji NIE MA ROŚLINY

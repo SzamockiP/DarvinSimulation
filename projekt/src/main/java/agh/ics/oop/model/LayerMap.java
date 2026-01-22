@@ -19,7 +19,7 @@ public class LayerMap<T extends Entity> {
     }
 
     public void addEntity(T entity) {
-        entitiesByPosition.get(entity.getPosition()).add(entity);
+        entitiesByPosition.computeIfAbsent(entity.getPosition(), k -> new ArrayList<>()).add(entity);
     }
     
     public void removeEntity(T entity){
@@ -44,6 +44,16 @@ public class LayerMap<T extends Entity> {
         return entitiesByPosition.containsKey(position) && !entitiesByPosition.get(position).isEmpty();
     }
 
+    public Set<Vector2d> getOccupiedPositions() {
+        Set<Vector2d> occupied = new HashSet<>();
+        for (var entry : entitiesByPosition.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                occupied.add(entry.getKey());
+            }
+        }
+        return occupied;
+    }
+
     public Boundary getCurrentBoundary() {
         return boundary;
     }
@@ -60,16 +70,9 @@ public class LayerMap<T extends Entity> {
         creature.move(this);
 
         if(!oldPosition.equals(creature.getPosition())) {
-            // Need cast because method expects T but we have Creature
-            // Ideally LayerMap should take Creature if we call move on it, or Creature should be T
-            // This casts assumes the Creature is of type T.
-            try {
-                T entity = (T) creature;
-                entitiesByPosition.get(oldPosition).remove(entity);
-                entitiesByPosition.get(creature.getPosition()).add(entity);
-            } catch (ClassCastException e) {
-                // Ignore if creature is not T? Should not happen in correct usage
-            }
+            T entity = (T) creature;
+            entitiesByPosition.get(oldPosition).remove(entity);
+            entitiesByPosition.get(creature.getPosition()).add(entity);
         }
     }
 }

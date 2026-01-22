@@ -24,7 +24,8 @@ class ManagersTest {
                 5, // energyPerPlant
                 1, 1, 1, 
                 10, // startingEnergy
-                5, 1, 1
+                5, 1, 1,
+                1, 1, 1, 1, 1, 10
         );
     }
 

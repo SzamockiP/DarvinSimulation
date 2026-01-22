@@ -11,5 +11,7 @@ public record SimulationStatistics(
         List<Genotype> mostPopularGenotypes, // Lista, bo może być remis
         double averageEnergy,
         double averageLifeSpan,
-        double averageChildren
+        double averageChildren,
+        int attachedParasiteCount,
+        int panickingParasiteCount
 ) {}

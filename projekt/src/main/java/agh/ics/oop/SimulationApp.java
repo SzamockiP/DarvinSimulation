@@ -13,7 +13,7 @@ public class SimulationApp extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         // Ładujemy plik z resources
-        loader.setLocation(getClass().getResource("/simulation.fxml"));
+        loader.setLocation(getClass().getResource("/configuration.fxml"));
 
         BorderPane viewRoot = loader.load();
 

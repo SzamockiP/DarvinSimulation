@@ -80,7 +80,9 @@ public class Parasite extends Creature implements IMove,IReproduce {
 
             // ustaw pozycję i zabierz hostowi energię
             this.setPosition(newPosition);
-            this.host.addEnergy(-getSimulationConfig().energyLossDueParasite());
+            int stolenEnergy = getSimulationConfig().energyLossDueParasite();
+            this.host.addEnergy(-stolenEnergy);
+            this.addEnergy(stolenEnergy);
 
             if(this.host.getEnergy() <= 0){
                 this.host.kill();
@@ -99,22 +101,5 @@ public class Parasite extends Creature implements IMove,IReproduce {
         // Zwierzę tworzy małe Zwierzę
         return new Parasite(position, genotype, energy, getSimulationConfig());
     }
-
-    /*@Override
-    public Creature reproduce(Creature other) {
-        if(!other.getClass().equals(this.getClass())){
-            throw new ClassCastException("Can't reproduce different class creatures");
-        }
-
-        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
-
-        int newEnergy = getEnergy()/2 +  other.getEnergy()/2;
-        this.setEnergy(getEnergy()/2);
-        other.setEnergy(other.getEnergy()/2);
-
-        Vector2d newPosition = this.getPosition();
-
-        return new Parasite(newPosition, newGenotype, newEnergy, simulationConfig);
-    }*/
 
 }

@@ -38,10 +38,20 @@ public class Simulation {
         }
 
         // dodaj rośliny
-        for(int i = 0; i < this.simulationConfig.startingPlants(); i++){
+        // Optymalizacja: nie próbuj stawiać więcej roślin niż jest miejsc
+        int width = simulationConfig.mapSize().upperRight().getX();
+        int height = simulationConfig.mapSize().upperRight().getY();
+        int maxPlants = (width + 1) * (height + 1);
+        int plantLimit = Math.min(this.simulationConfig.startingPlants(), maxPlants);
+
+        for(int i = 0; i < plantLimit; i++){
             Vector2d position = getRandomPlantPosition();
 
-            worldMap.getPlants().addEntity(new Plant(position));
+            if (position != null) {
+                worldMap.getPlants().addEntity(new Plant(position));
+            } else {
+                break; // Brak miejsc
+            }
         }
 
         // dodaj pasożyty
@@ -51,7 +61,7 @@ public class Simulation {
                     new Parasite(
                             position,
                             new Genotype(this.simulationConfig.genotypeLength()),
-                            this.simulationConfig.startingEnergy(),
+                            this.simulationConfig.startingParasiteEnergy(),
                             this.simulationConfig
                     )
             );
@@ -60,8 +70,8 @@ public class Simulation {
 
     private Vector2d getRandomPosition() {
         Random random = new Random();
-        int x = random.nextInt(simulationConfig.mapSize().upperRight().getX());
-        int y = random.nextInt(simulationConfig.mapSize().upperRight().getY());
+        int x = random.nextInt(simulationConfig.mapSize().upperRight().getX() + 1);
+        int y = random.nextInt(simulationConfig.mapSize().upperRight().getY() + 1);
         return new Vector2d(x, y);
     }
 
@@ -79,8 +89,8 @@ public class Simulation {
         List<Vector2d> freeSteppeSpots = new ArrayList<>();
 
         // Przechodzimy po całej mapie i sprawdzamy, gdzie nie ma trawy
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
+        for (int x = 0; x <= width; x++) {
+            for (int y = 0; y <= height; y++) {
                 Vector2d pos = new Vector2d(x, y);
 
                 if (!worldMap.getPlants().isOccupied(pos)) {// Jeśli na danej pozycji NIE MA ROŚLINY
@@ -115,7 +125,6 @@ public class Simulation {
     }
 
     private void initializeManagers() {
-        // Based on original tickSimulation order
         managers.add(new SetHostsManager());
         managers.add(new MoveAnimalsManager());
         
@@ -164,9 +173,11 @@ public class Simulation {
         }
     }
 
+    private int day = 0;
+
     public void step() {
         tickSimulation();
-
-        notifyObservers("Dzień minął");
+        day++;
+        notifyObservers("Dzień: " + day);
     }
 }

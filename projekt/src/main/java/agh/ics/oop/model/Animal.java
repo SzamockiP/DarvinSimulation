@@ -5,9 +5,9 @@ import agh.ics.oop.model.Genotype;
 import agh.ics.oop.model.util.SimulationConfig;
 
 public class Animal extends Creature {
+    private final java.util.List<Animal> children = new java.util.ArrayList<>();
     int childrenAmount;
     int age;
-    //private final SimulationConfig simulationConfig;
 
     public Animal(Vector2d position, Genotype genotype, SimulationConfig simulationConfig) {
         super(position, simulationConfig.startingEnergy(), genotype, simulationConfig);
@@ -30,8 +30,12 @@ public class Animal extends Creature {
     public int getChildrenAmount(){
         return childrenAmount;
     }
-    public void addChild() {
+    public int getLivingChildrenAmount() {
+        return (int) children.stream().filter(Creature::isAlive).count();
+    }
+    public void addChild(Animal child) {
         this.childrenAmount++;
+        this.children.add(child);
     }
 
     public void addEnergy(int delta){
@@ -53,21 +57,4 @@ public class Animal extends Creature {
         // Zwierzę tworzy małe Zwierzę
         return new Animal(position, genotype, energy, getSimulationConfig());
     }
-
-    /*@Override
-    public Creature reproduce(Creature other) {
-        if(!other.getClass().equals(this.getClass())){
-            throw new ClassCastException("Can't reproduce different class creatures");
-        }
-
-        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
-
-        int newEnergy = getEnergy()/2 +  other.getEnergy()/2;
-        this.setEnergy(getEnergy()/2);
-        other.setEnergy(other.getEnergy()/2);
-
-        Vector2d newPosition = this.getPosition();
-
-        return new Animal(newPosition, newEnergy, newGenotype);
-    }*/
 }
