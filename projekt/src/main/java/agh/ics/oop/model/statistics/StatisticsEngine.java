@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class StatisticsEngine {
     private final WorldMap map;
+    private final Map<Vector2d, Integer> plantsHistory = new HashMap<>();
 
     public StatisticsEngine(WorldMap map) {
         this.map = map;
@@ -95,5 +96,29 @@ public class StatisticsEngine {
                 .filter(entry -> entry.getValue() == maxCount)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    public void update() {
+        // Pobieramy pozycje, na których AKTUALNIE rosną rośliny
+        Set<Vector2d> plantPositions = map.getPlants().getOccupiedPositions();
+
+        for (Vector2d pos : plantPositions) {
+            plantsHistory.merge(pos, 1, Integer::sum);// Zwiększamy licznik dla danego pola o 1 (jeśli nie ma, wpisujemy 1)
+        }
+    }
+
+    public Set<Vector2d> getFieldsWithMostPlantGrowth() {
+        if (plantsHistory.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        // Znajdujemy największą wartość (rekord)
+        int maxCount = Collections.max(plantsHistory.values());
+
+        // Wybieramy wszystkie pola, które mają ten rekordowy wynik
+        return plantsHistory.entrySet().stream()
+                .filter(entry -> entry.getValue() == maxCount)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 }
