@@ -10,8 +10,8 @@ public class FeedAnimalsManager implements ISimulationManager {
         LayerMap<Animal> animalMap = map.getAnimals();
         LayerMap<Plant> plantMap = map.getPlants();
 
-        for(int y = 0; y < animalMap.getCurrentBoundary().upperRight().getY(); y++){
-            for(int x = 0; x < animalMap.getCurrentBoundary().upperRight().getX(); x++){
+        for(int y = 0; y <= animalMap.getCurrentBoundary().upperRight().getY(); y++){
+            for(int x = 0; x <= animalMap.getCurrentBoundary().upperRight().getX(); x++){
                 Vector2d pos = new Vector2d(x,y);
                 List<Animal> animals = animalMap.getEntitiesAt(pos);
                 List<Plant> plants = plantMap.getEntitiesAt(pos);

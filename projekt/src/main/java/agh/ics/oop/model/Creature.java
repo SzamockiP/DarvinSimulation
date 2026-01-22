@@ -71,26 +71,24 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
 
         this.setDirection(this.getDirection().rotate(rotation));
 
-        if (rotation.equals(MoveDirection.FRONT)) {
-            Vector2d unitVector = this.getDirection().getUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
+        Vector2d unitVector = this.getDirection().getUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
 
-            Vector2d currentPos = this.getPosition();
-            Vector2d newPos = currentPos.add(unitVector);
+        Vector2d currentPos = this.getPosition();
+        Vector2d newPos = currentPos.add(unitVector);
 
-            if (map.inBounds(newPos)) {
-                this.setPosition(newPos);
-            } else { // odbijamy od ściany
+        if (map.inBounds(newPos)) {
+            this.setPosition(newPos);
+        } else { // odbijamy od ściany
 
-                this.setDirection(this.getDirection().rotate(MoveDirection.BACK)); // zawróć
+            this.setDirection(this.getDirection().rotate(MoveDirection.BACK)); // zawróć
 
-                Vector2d bounceVector = this.getDirection().getUnitVector();
+            Vector2d bounceVector = this.getDirection().getUnitVector();
 
-                Vector2d bouncePos = currentPos.add(bounceVector);
+            Vector2d bouncePos = currentPos.add(bounceVector);
 
-                // FIXME: Biedak może być w rogu i znowu się teoretycznie odbić, ale to już jego problem
-                if (map.inBounds(bouncePos)) {
-                    this.setPosition(bouncePos);
-                }
+            // FIXME: Biedak może być w rogu i znowu się teoretycznie odbić, ale to już jego problem
+            if (map.inBounds(bouncePos)) {
+                this.setPosition(bouncePos);
             }
         }
     }
