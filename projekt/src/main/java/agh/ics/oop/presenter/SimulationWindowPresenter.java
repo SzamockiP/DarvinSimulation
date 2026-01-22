@@ -11,6 +11,9 @@ import javafx.scene.paint.Color;
 import agh.ics.oop.Simulation;
 import javafx.application.Platform;
 import javafx.scene.paint.Paint;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 
 import java.io.File;
 import java.util.Set;
@@ -27,11 +30,43 @@ public class SimulationWindowPresenter implements MapChangeListener {
     Set<Vector2d> mostPlacedGrass;
     private StatisticsLogger statisticsLogger; //
 
+    @FXML private ComboBox<String> statsComboBox;
+    @FXML private LineChart<Number, Number> statsChart;
+    private XYChart.Series<Number, Number> currentSeries;
+    private int currentDay = 0;
+
     @FXML private Canvas mapCanvas;
     @FXML private Label dayLabel;
     @FXML private Label infoLabel;
 
     @FXML private javafx.scene.control.Spinner<Integer> speedSpinner;
+
+    @FXML
+    public void initialize() {
+        statsComboBox.getItems().addAll(
+                "Liczba zwierząt",
+                "Liczba roślin",
+                "Liczba pasożytów",
+                "Wolne pola",
+                "Średnia energia",
+                "Średnia długość życia",
+                "Średnia liczba dzieci",
+                "Przyczepione pasożyty",
+                "Panikujące pasożyty"
+        );
+        statsComboBox.getSelectionModel().select(0);
+
+        currentSeries = new XYChart.Series<>();
+        currentSeries.setName(statsComboBox.getValue());
+        statsChart.getData().add(currentSeries);
+
+        statsComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            statsChart.getData().clear();
+            currentSeries = new XYChart.Series<>();
+            currentSeries.setName(newVal);
+            statsChart.getData().add(currentSeries);
+        });
+    }
 
     public void setSimulationConfig(SimulationConfig config) {
         String folderName = "stats";
@@ -120,6 +155,25 @@ public class SimulationWindowPresenter implements MapChangeListener {
             drawMap(); 
             dayLabel.setText(message);
             updateStatsLabel(stats);
+
+            // Update Chart
+            currentDay++;
+            if (currentSeries != null && statsComboBox.getValue() != null) {
+                double value = 0.0;
+                String selected = statsComboBox.getValue();
+                switch (selected) {
+                    case "Liczba zwierząt" -> value = stats.animalCount();
+                    case "Liczba roślin" -> value = stats.plantCount();
+                    case "Liczba pasożytów" -> value = stats.parasiteCount();
+                    case "Wolne pola" -> value = stats.freeFieldsCount();
+                    case "Średnia energia" -> value = stats.averageEnergy();
+                    case "Średnia długość życia" -> value = stats.averageLifeSpan();
+                    case "Średnia liczba dzieci" -> value = stats.averageChildren();
+                    case "Przyczepione pasożyty" -> value = stats.attachedParasiteCount();
+                    case "Panikujące pasożyty" -> value = stats.panickingParasiteCount();
+                }
+                currentSeries.getData().add(new XYChart.Data<>(currentDay, value));
+            }
         });
     }
 

@@ -34,4 +34,19 @@
             <Spinner fx:id="speedSpinner" min="0" max="10000" initialValue="300" amountToStepBy="50" editable="true"/>
         </VBox>
     </left>
+
+    <bottom>
+        <VBox alignment="CENTER" spacing="5" style="-fx-padding: 10;">
+            <Label text="Wybierz statystykę do wykresu:" />
+            <javafx.scene.control.ComboBox fx:id="statsComboBox" prefWidth="200.0" />
+            <javafx.scene.chart.LineChart fx:id="statsChart" title="Statystyki w czasie" createSymbols="false" minHeight="200.0" maxHeight="300.0">
+                <xAxis>
+                    <javafx.scene.chart.NumberAxis label="Dzień" forceZeroInRange="false" />
+                </xAxis>
+                <yAxis>
+                    <javafx.scene.chart.NumberAxis label="Wartość" />
+                </yAxis>
+            </javafx.scene.chart.LineChart>
+        </VBox>
+    </bottom>
 </BorderPane>
