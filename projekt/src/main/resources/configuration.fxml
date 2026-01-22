@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -21,8 +22,25 @@
         </VBox>
     </top>
 
+    <left>
+        <VBox alignment="CENTER" style="-fx-padding: 20;">
+        <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10; -fx-background-color: #ddd;">
+            <Label text="Wybierz zestaw:" />
+            <ComboBox fx:id="presetComboBox" promptText="-- Wybierz --" onAction="#onPresetSelected" prefWidth="150"/>
+            <TextField fx:id="newPresetName" promptText="Nazwa nowego..." prefWidth="120"/>
+            <Button text="Zapisz obecny" onAction="#onSavePresetClicked"/>
+        </HBox>
+        <VBox alignment="CENTER" style="-fx-padding: 20;">
+            <Label fx:id="errorLabel" text="" style="-fx-text-fill: red;"/>
+            <Button text="Wygeneruj symulację"  style="-fx-background-color: red; -fx-text-fill: white;" onAction="#onSimulationStartClicked" />
+        </VBox>
+        </VBox>
+    </left>
+
     <center>
+        <javafx.scene.control.ScrollPane fitToWidth="true" style="-fx-background-color: transparent;">
         <VBox alignment="CENTER" spacing="-6" style="-fx-padding: 10;">
+
             <CheckBox fx:id="parasiteToggle" text="Włącz pasożyty" selected="true" onAction="#onParasiteToggle" />
             
             <HBox alignment="CENTER" spacing="-2" style="-fx-padding: 10;">
@@ -113,12 +131,8 @@
                 </HBox>
             </VBox>
         </VBox>
+        </javafx.scene.control.ScrollPane>
     </center>
     
-    <bottom>
-        <VBox alignment="CENTER" style="-fx-padding: 20;">
-            <Label fx:id="errorLabel" text="" style="-fx-text-fill: red;"/>
-            <Button text="Wygeneruj symulację" onAction="#onSimulationStartClicked" />
-        </VBox>
-    </bottom>
+
 </BorderPane>
