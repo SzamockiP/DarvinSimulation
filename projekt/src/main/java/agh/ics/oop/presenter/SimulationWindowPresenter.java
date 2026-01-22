@@ -157,8 +157,8 @@ public class SimulationWindowPresenter implements MapChangeListener {
         gc.setFill(Color.ANTIQUEWHITE);
         gc.fillRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
 
-        double mapWidth = worldMap.getCurrentBoundary().upperRight().getX();
-        double mapHeight = worldMap.getCurrentBoundary().upperRight().getY();
+        double mapWidth = worldMap.getCurrentBoundary().upperRight().getX() + 1;
+        double mapHeight = worldMap.getCurrentBoundary().upperRight().getY() + 1;
 
         double cellWidth = mapCanvas.getWidth() / Math.max(1, mapWidth);
         double cellHeight = mapCanvas.getHeight() / Math.max(1, mapHeight);

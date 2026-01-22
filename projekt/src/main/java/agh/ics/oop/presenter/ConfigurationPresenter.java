@@ -15,43 +15,43 @@ import java.io.IOException;
 public class ConfigurationPresenter {
 
     @FXML
-    private TextField widthField;
+    private javafx.scene.control.Spinner<Integer> widthField;
     @FXML
-    private TextField heightField;
+    private javafx.scene.control.Spinner<Integer> heightField;
     @FXML
-    private TextField animalCount;
+    private javafx.scene.control.Spinner<Integer> animalCount;
     @FXML
-    private TextField parasiteCount;
+    private javafx.scene.control.Spinner<Integer> parasiteCount;
     @FXML
-    private TextField startAnimalEnergy;
+    private javafx.scene.control.Spinner<Integer> startAnimalEnergy;
     @FXML
-    private TextField geneLength;
+    private javafx.scene.control.Spinner<Integer> geneLength;
     @FXML
-    private TextField plantCount;
+    private javafx.scene.control.Spinner<Integer> plantCount;
     @FXML
-    private TextField dailyPlantCount;
+    private javafx.scene.control.Spinner<Integer> dailyPlantCount;
     @FXML
-    private TextField plantsEnergy;
+    private javafx.scene.control.Spinner<Integer> plantsEnergy;
     @FXML
-    private TextField energyLossDay;
+    private javafx.scene.control.Spinner<Integer> energyLossDay;
     @FXML
-    private TextField energyReproduce;
+    private javafx.scene.control.Spinner<Integer> energyReproduce;
     @FXML
-    private TextField minEnergyReproduce;
+    private javafx.scene.control.Spinner<Integer> minEnergyReproduce;
     @FXML
-    private TextField minMutation;
+    private javafx.scene.control.Spinner<Integer> minMutation;
     @FXML
-    private TextField maxMutation;
+    private javafx.scene.control.Spinner<Integer> maxMutation;
     @FXML
     private Label errorLabel;
     @FXML
     private javafx.scene.control.CheckBox parasiteToggle;
     @FXML
-    private TextField energyPanickingParasite;
+    private javafx.scene.control.Spinner<Integer> energyPanickingParasite;
     @FXML
-    private TextField energyTakenParasite;
+    private javafx.scene.control.Spinner<Integer> energyTakenParasite;
     @FXML
-    private TextField startParasiteEnergy;
+    private javafx.scene.control.Spinner<Integer> startParasiteEnergy;
 
     @FXML
     private void onParasiteToggle() {
@@ -65,37 +65,43 @@ public class ConfigurationPresenter {
     @FXML
     private void onSimulationStartClicked() {
         try {
-            int width = Integer.parseInt(widthField.getText());
-            int height = Integer.parseInt(heightField.getText());
-            Boundary mapBoundary = new Boundary(new Vector2d(0, 0), new Vector2d(width, height));
+            int width = widthField.getValue();
+            int height = heightField.getValue();
+
+            if (width < 1 || height < 1) {
+                errorLabel.setText("Błąd: Minimalny rozmiar mapy to 1x1!");
+                return;
+            }
+
+            Boundary mapBoundary = new Boundary(new Vector2d(0, 0), new Vector2d(width - 1, height - 1));
             // Dżungla
             int jungleHeight = Math.max(1, height / 5); // Zabezpieczenie, żeby wysokość była min 1
             int jungleStartY = (height - jungleHeight) / 2;
             int jungleEndY = jungleStartY + jungleHeight;
-            Boundary jungleBoundary = new Boundary(new Vector2d(0, jungleStartY), new Vector2d(width, jungleEndY));
+            Boundary jungleBoundary = new Boundary(new Vector2d(0, jungleStartY), new Vector2d(width - 1, jungleEndY));
 
             // 2. Tworzymy SimulationConfig ze WSZYSTKIMI parametrami
             SimulationConfig config = new SimulationConfig(
                     mapBoundary,
                     jungleBoundary,
-                    Integer.parseInt(dailyPlantCount.getText()),   // plantPerDay
-                    Integer.parseInt(plantsEnergy.getText()),      // energyPerPlant
-                    Integer.parseInt(plantCount.getText()),        // startingPlants
-                    Integer.parseInt(animalCount.getText()),       // startingAnimals
-                    parasiteToggle.isSelected() ? Integer.parseInt(parasiteCount.getText()) : 0,     // startingParasites
-                    Integer.parseInt(startAnimalEnergy.getText()), // startingEnergy
-                    Integer.parseInt(geneLength.getText()),        // genotypeLength
-                    Integer.parseInt(energyTakenParasite.getText()), // energyLossDueParasite
-                    Integer.parseInt(energyPanickingParasite.getText()), // energyLossInPanic
+                    dailyPlantCount.getValue(),   // plantPerDay
+                    plantsEnergy.getValue(),      // energyPerPlant
+                    plantCount.getValue(),        // startingPlants
+                    animalCount.getValue(),       // startingAnimals
+                    parasiteToggle.isSelected() ? parasiteCount.getValue() : 0,     // startingParasites
+                    startAnimalEnergy.getValue(), // startingEnergy
+                    geneLength.getValue(),        // genotypeLength
+                    energyTakenParasite.getValue(), // energyLossDueParasite
+                    energyPanickingParasite.getValue(), // energyLossInPanic
 
                     // --- NOWE POLA ---
-                    Integer.parseInt(energyLossDay.getText()),      // dailyEnergyLoss
-                    Integer.parseInt(minEnergyReproduce.getText()), // reproductionMinEnergy
-                    Integer.parseInt(energyReproduce.getText()),    // reproductionCost
-                    Integer.parseInt(minMutation.getText()),        // mutationMin
+                    energyLossDay.getValue(),      // dailyEnergyLoss
+                    minEnergyReproduce.getValue(), // reproductionMinEnergy
+                    energyReproduce.getValue(),    // reproductionCost
+                    minMutation.getValue(),        // mutationMin
 
-                    Integer.parseInt(maxMutation.getText()),        // mutationMax
-                    Integer.parseInt(startParasiteEnergy.getText()) // startingParasiteEnergy
+                    maxMutation.getValue(),        // mutationMax
+                    startParasiteEnergy.getValue() // startingParasiteEnergy
             );
 
             spawnSimulationWindow(config);

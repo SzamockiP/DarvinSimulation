@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Insets?>
@@ -28,11 +29,11 @@
                 <Label text="Mapa: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
                 <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                     <Label text="Szerokość" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                    <TextField fx:id="widthField" text="30" maxWidth="60"/>
+                    <Spinner fx:id="widthField" min="1" max="500" initialValue="30" editable="true" maxWidth="80"/>
                 </VBox>
                 <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                     <Label text="Wysokość" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                    <TextField fx:id="heightField" text="30" maxWidth="60"/>
+                    <Spinner fx:id="heightField" min="1" max="500" initialValue="30" editable="true" maxWidth="80"/>
                 </VBox>
             </HBox>
 
@@ -46,68 +47,68 @@
                 <HBox alignment="CENTER">
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Zwierząt: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="animalCount" text="200" maxWidth="60"/>
+                        <Spinner fx:id="animalCount" min="0" max="10000" initialValue="200" editable="true" maxWidth="80"/>
                     </VBox>
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Pasożytów: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="parasiteCount" text="200" maxWidth="60"/>
+                        <Spinner fx:id="parasiteCount" min="0" max="10000" initialValue="200" editable="true" maxWidth="80"/>
                     </VBox>
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Roślin: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="plantCount" text="300" maxWidth="60"/>
+                        <Spinner fx:id="plantCount" min="0" max="10000" initialValue="300" editable="true" maxWidth="80"/>
                     </VBox>
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Enegii zwierząt: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="startAnimalEnergy" text="10" maxWidth="60"/>
+                        <Spinner fx:id="startAnimalEnergy" min="1" max="1000" initialValue="10" editable="true" maxWidth="80"/>
                     </VBox>
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Energia pasożytów: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="startParasiteEnergy" text="10" maxWidth="60"/>
+                        <Spinner fx:id="startParasiteEnergy" min="1" max="1000" initialValue="10" editable="true" maxWidth="80"/>
                     </VBox>
                 </HBox>
             </VBox>
             <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Długośc genów stworzeń: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="geneLength" text="10" maxWidth="60"/>
+                <Spinner fx:id="geneLength" min="1" max="1000" initialValue="10" editable="true" maxWidth="80"/>
             </HBox>
             <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Ilość roślin rosnących codziennie: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="dailyPlantCount" text="10" maxWidth="60"/>
+                <Spinner fx:id="dailyPlantCount" min="0" max="10000" initialValue="10" editable="true" maxWidth="80"/>
             </HBox>
             <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Energia po zjedzeniu rośliny: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="plantsEnergy" text="5" maxWidth="60"/>
+                <Spinner fx:id="plantsEnergy" min="0" max="1000" initialValue="5" editable="true" maxWidth="80"/>
             </HBox>
             <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Energia tracona na koniec dnia: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="energyLossDay" text="1" maxWidth="60"/>
+                <Spinner fx:id="energyLossDay" min="0" max="1000" initialValue="1" editable="true" maxWidth="80"/>
             </HBox>
             <HBox  alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Energia pobierana od zwierzęcia z pasożytem: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="energyTakenParasite" text="1" maxWidth="60"/>
+                <Spinner fx:id="energyTakenParasite" min="0" max="1000" initialValue="1" editable="true" maxWidth="80"/>
             </HBox>
             <HBox  alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Energia tracona przez panikującego pasożyta: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="energyPanickingParasite" text="1" maxWidth="60"/>
+                <Spinner fx:id="energyPanickingParasite" min="0" max="1000" initialValue="1" editable="true" maxWidth="80"/>
             </HBox>
             <HBox  alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Energia potrzebna do rozmnażania: " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="minEnergyReproduce" text="2" maxWidth="60"/>
+                <Spinner fx:id="minEnergyReproduce" min="0" max="1000" initialValue="2" editable="true" maxWidth="80"/>
             </HBox>
             <HBox  alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                 <Label text="Koszt rozmnażania (dla rodzica): " style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                <TextField fx:id="energyReproduce" text="1" maxWidth="60"/>
+                <Spinner fx:id="energyReproduce" min="0" max="1000" initialValue="1" editable="true" maxWidth="80"/>
             </HBox>
             <VBox alignment="CENTER" spacing="-6" style="-fx-padding: 10;">
                 <Label text="Liczba mutacji genów u potomków" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
                 <HBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Min" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="minMutation" text="0" maxWidth="60"/>
+                        <Spinner fx:id="minMutation" min="0" max="1000" initialValue="0" editable="true" maxWidth="80"/>
                     </VBox>
                     <VBox alignment="CENTER" spacing="10" style="-fx-padding: 10;">
                         <Label text="Max" style="-fx-font-size: 10px; -fx-font-weight: bold;"/>
-                        <TextField fx:id="maxMutation" text="10" maxWidth="60"/>
+                        <Spinner fx:id="maxMutation" min="0" max="1000" initialValue="10" editable="true" maxWidth="80"/>
                     </VBox>
                 </HBox>
             </VBox>

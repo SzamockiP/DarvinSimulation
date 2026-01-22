@@ -19,7 +19,7 @@ public class LayerMap<T extends Entity> {
     }
 
     public void addEntity(T entity) {
-        entitiesByPosition.get(entity.getPosition()).add(entity);
+        entitiesByPosition.computeIfAbsent(entity.getPosition(), k -> new ArrayList<>()).add(entity);
     }
     
     public void removeEntity(T entity){
@@ -42,6 +42,16 @@ public class LayerMap<T extends Entity> {
 
     public boolean isOccupied(Vector2d position) {
         return entitiesByPosition.containsKey(position) && !entitiesByPosition.get(position).isEmpty();
+    }
+
+    public Set<Vector2d> getOccupiedPositions() {
+        Set<Vector2d> occupied = new HashSet<>();
+        for (var entry : entitiesByPosition.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                occupied.add(entry.getKey());
+            }
+        }
+        return occupied;
     }
 
     public Boundary getCurrentBoundary() {

@@ -65,16 +65,15 @@ public class StatisticsEngine {
         int width = map.getCurrentBoundary().upperRight().getX();
         int height = map.getCurrentBoundary().upperRight().getY();
 
-        // Zbiór zajętych pozycji (Set usuwa duplikaty - jeśli na polu stoi 5 zwierząt, to pole liczy się raz)
+        // 1. Pobieramy zajęte pozycje z każdej warstwy
         Set<Vector2d> occupiedPositions = new HashSet<>();
+        
+        occupiedPositions.addAll(map.getAnimals().getOccupiedPositions());
+        occupiedPositions.addAll(map.getPlants().getOccupiedPositions());
+        occupiedPositions.addAll(map.getParasites().getOccupiedPositions());
 
-        // Dodajemy pozycje wszystkich obiektów
-        for (Animal a : map.getAnimals().getEntities()) occupiedPositions.add(a.getPosition());
-        for (Plant p : map.getPlants().getEntities()) occupiedPositions.add(p.getPosition());
-        for (Parasite p : map.getParasites().getEntities()) occupiedPositions.add(p.getPosition());
-
-        // Wszystkie pola
-        int totalFields = (width + 1) * (height + 1); // +1 bo indeksujemy od 0
+        // Wszystkie pola (width i height to indeksy, więc rozmiar to +1)
+        int totalFields = (width + 1) * (height + 1); 
 
         return totalFields - occupiedPositions.size();
     }
