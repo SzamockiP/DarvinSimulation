@@ -125,7 +125,6 @@ public class Simulation {
     }
 
     private void initializeManagers() {
-        // Based on original tickSimulation order
         managers.add(new SetHostsManager());
         managers.add(new MoveAnimalsManager());
         

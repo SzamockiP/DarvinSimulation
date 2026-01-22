@@ -67,7 +67,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
                     try {
                         delay = query.get();
                     } catch (Exception e) {
-                       // ignore
+
                     }
 
                     if (isSimulationRunning && simulation != null) {
@@ -110,10 +110,10 @@ public class SimulationWindowPresenter implements MapChangeListener {
     public void mapChanged(WorldMap worldMap, String message) {
         SimulationStatistics stats = statisticsEngine.calculate();
 
-        // Wysyłamy do GUI tylko GOTOWY WYNIK.
+        // Wysyłamy do GUI tylko gotowy wynik
         Platform.runLater(() -> {
             drawMap(); 
-            dayLabel.setText(message); // Update day label
+            dayLabel.setText(message);
             updateStatsLabel(stats);
         });
     }
@@ -188,8 +188,6 @@ public class SimulationWindowPresenter implements MapChangeListener {
         int jungleHeight = Math.max(1, height / 5);
         int jungleStartY = (height - jungleHeight) / 2;
         
-        // Inverted Y axis
-        // Top visual Y = (mapHeight - (jungleStartY + jungleHeight)) * cellHeight
         double visualY = (mapHeight - jungleStartY - jungleHeight) * cellHeight;
 
         gc.setFill(Color.LIGHTGREEN);
@@ -209,7 +207,6 @@ public class SimulationWindowPresenter implements MapChangeListener {
             double logicX = entity.getPosition().getX();
             double logicY = entity.getPosition().getY();
             
-            // Invert Y
             double visualY = mapHeight - 1 - logicY;
             
             double x = logicX * cellWidth;
@@ -225,13 +222,12 @@ public class SimulationWindowPresenter implements MapChangeListener {
             double logicX = creature.getPosition().getX();
             double logicY = creature.getPosition().getY();
             
-            // Invert Y
             double visualY = mapHeight - 1 - logicY;
             
             double x = logicX * cellWidth;
             double y = visualY * cellHeight;
 
-            // Compute body size and positioning
+            // Rozmiar ciała i pozycja
             double width = cellWidth * scale;
             double height = cellHeight * scale;
             double offsetX = (cellWidth - width) / 2;
@@ -239,25 +235,24 @@ public class SimulationWindowPresenter implements MapChangeListener {
             double centerX = x + cellWidth / 2;
             double centerY = y + cellHeight / 2;
 
-            // Draw Body
+            // Rysowanie ciała
             gc.setFill(bodyColor);
             gc.fillOval(x + offsetX, y + offsetY, width, height);
 
-            // Draw Eyes (Directional)
+            // Rysowanie oczu
             Vector2d dir = creature.getDirection().getUnitVector();
-            // Invert Y in direction vector for visual rotation
-            // Logic (0,1) -> Visual Up -> -90 deg
+
+            // (0,1) -> Góra -> -90 stopni
             double angle = Math.toDegrees(Math.atan2(-dir.getY(), dir.getX()));
 
             gc.save();
             gc.translate(centerX, centerY);
             gc.rotate(angle);
 
-            // Draw eyes facing "Right" (0 deg) relative to rotated frame
             gc.setFill(eyeColor);
-            double eyeSize = width * 0.20; // 20% size
-            double eyeDist = width * 0.30; // 30% distance forward
-            double eyeSep = width * 0.20;  // 20% distance sideways
+            double eyeSize = width * 0.20;
+            double eyeDist = width * 0.30;
+            double eyeSep = width * 0.20; 
 
             gc.fillOval(eyeDist - eyeSize / 2, -eyeSep - eyeSize / 2, eyeSize, eyeSize);
             gc.fillOval(eyeDist - eyeSize / 2, eyeSep - eyeSize / 2, eyeSize, eyeSize);

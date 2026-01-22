@@ -57,21 +57,4 @@ public class Animal extends Creature {
         // Zwierzę tworzy małe Zwierzę
         return new Animal(position, genotype, energy, getSimulationConfig());
     }
-
-    /*@Override
-    public Creature reproduce(Creature other) {
-        if(!other.getClass().equals(this.getClass())){
-            throw new ClassCastException("Can't reproduce different class creatures");
-        }
-
-        Genotype newGenotype = getGenotype().cross(other.getGenotype(), getEnergy(), other.getEnergy());
-
-        int newEnergy = getEnergy()/2 +  other.getEnergy()/2;
-        this.setEnergy(getEnergy()/2);
-        other.setEnergy(other.getEnergy()/2);
-
-        Vector2d newPosition = this.getPosition();
-
-        return new Animal(newPosition, newEnergy, newGenotype);
-    }*/
 }

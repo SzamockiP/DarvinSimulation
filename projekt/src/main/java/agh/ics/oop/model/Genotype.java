@@ -15,7 +15,6 @@ public class Genotype {
     private int currentGeneIndex;
     private final int genotypeLenght;
 
-    // FIXME: poprawić trzeba by było faktycznie losowe a nie takie xD
     public Genotype(int genotypeLenght) {
         this.genotypeLenght = genotypeLenght;
         this.currentGeneIndex = 0;

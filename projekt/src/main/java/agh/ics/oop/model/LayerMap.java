@@ -70,16 +70,9 @@ public class LayerMap<T extends Entity> {
         creature.move(this);
 
         if(!oldPosition.equals(creature.getPosition())) {
-            // Need cast because method expects T but we have Creature
-            // Ideally LayerMap should take Creature if we call move on it, or Creature should be T
-            // This casts assumes the Creature is of type T.
-            try {
-                T entity = (T) creature;
-                entitiesByPosition.get(oldPosition).remove(entity);
-                entitiesByPosition.get(creature.getPosition()).add(entity);
-            } catch (ClassCastException e) {
-                // Ignore if creature is not T? Should not happen in correct usage
-            }
+            T entity = (T) creature;
+            entitiesByPosition.get(oldPosition).remove(entity);
+            entitiesByPosition.get(creature.getPosition()).add(entity);
         }
     }
 }
