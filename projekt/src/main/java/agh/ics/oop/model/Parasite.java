@@ -102,4 +102,30 @@ public class Parasite extends Creature implements IMove,IReproduce {
         return new Parasite(position, genotype, energy, getSimulationConfig());
     }
 
+    public Parasite(Parasite other) {
+        super(other);
+        this.panicking = other.panicking;
+        this.daysWithHost = other.daysWithHost;
+        this.host = other.host; // To wskazuje na starego hosta Wymaga relink()
+    }
+
+    @Override
+    public Entity copy() {
+        return new Parasite(this);
+    }
+    
+    public void relink(java.util.Map<java.util.UUID, Animal> idMap) {
+        if (this.host != null) {
+            Animal newHost = idMap.get(this.host.getId());
+            if (newHost != null) {
+                this.host = newHost;
+            } else {
+                // Host mógł umrzeć i zostać usunięty? Albo coś poszło nie tak.
+                // W takim wypadku odczepiamy pasożyta lub panikujemy.
+                this.host = null;
+                this.panicking = true;
+            }
+        }
+    }
+
 }

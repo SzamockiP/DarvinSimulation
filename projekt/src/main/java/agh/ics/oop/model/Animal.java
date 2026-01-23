@@ -52,6 +52,17 @@ public class Animal extends Creature {
         this.makeOlder();
     }
 
+    public Animal(Animal other) {
+        super(other);
+        this.age = other.age;
+        this.childrenAmount = other.childrenAmount;
+    }
+
+    @Override
+    public Entity copy() {
+        return new Animal(this);
+    }
+
     @Override
     protected Creature createChild(Vector2d position, Genotype genotype, int energy) {
         // Zwierzę tworzy małe Zwierzę

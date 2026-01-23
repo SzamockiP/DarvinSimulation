@@ -23,6 +23,15 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
         this(position, initialEnergy, new Genotype(genomeSize), simulationConfig);
     }
 
+    public Creature(Creature other) {
+        super(other.getPosition());
+        this.energy = other.energy;
+        this.genotype = new Genotype(other.genotype);
+        this.direction = other.direction;
+        this.isAlive = other.isAlive;
+        this.simulationConfig = other.simulationConfig;
+    }
+
     public SimulationConfig getSimulationConfig() {
         return simulationConfig;
     }

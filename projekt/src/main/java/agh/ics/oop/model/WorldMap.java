@@ -48,4 +48,64 @@ public class WorldMap {
         if (deadAnimalsCount == 0) return 0.0;
         return (double) totalDeadAnimalsAge / deadAnimalsCount;
     }
+
+    public WorldMap copy() {
+        WorldMap newMap = new WorldMap(this.boundary);
+        
+        // Kopiowanie prostych statystyk
+        newMap.totalDeadAnimalsAge = this.totalDeadAnimalsAge;
+        newMap.deadAnimalsCount = this.deadAnimalsCount;
+
+        java.util.Map<java.util.UUID, Animal> idMap = new java.util.HashMap<>();
+
+        // Kopiowanie zwierząt
+        for (Animal animal : this.animalMap.getEntities()) {
+            Animal copy = (Animal) animal.copy();
+            idMap.put(animal.getId(), copy);
+            newMap.getAnimals().addEntity(copy);
+        }
+
+        // Kopiowanie martwych zwierząt
+        // (Ważne: martwe zwierzęta nie są na mapie, ale są w statystykach)
+        for(Animal dead : this.deadAnimals) {
+             newMap.getDeadAnimals().add((Animal) dead.copy());
+        }
+
+        // Kopiowanie roślin
+        for (Plant plant : this.plantMap.getEntities()) {
+            newMap.getPlants().addEntity((Plant) plant.copy());
+        }
+
+        // Kopiowanie pasożytów
+        for (Parasite parasite : this.parasiteMap.getEntities()) {
+            Parasite copy = (Parasite) parasite.copy();
+            newMap.getParasites().addEntity(copy);
+            
+            // Relinkowanie
+            // Musimy to zrobić PO skopiowaniu wszystkich zwierząt (hostów)
+            copy.relink(idMap);
+        }
+
+        return newMap;
+    }
+
+    public void restore(WorldMap snapshot) {
+        // 1. Tworzymy świeżą głęboką kopię snapshotu (aby nie modyfikować historii)
+        WorldMap fresh = snapshot.copy();
+
+        // 2. Czyścimy obecny stan
+        this.animalMap.clear();
+        this.plantMap.clear();
+        this.parasiteMap.clear();
+        this.deadAnimals.clear();
+
+        // 3. Przenosimy zawartość ze świeżej kopii
+        for (Animal a : fresh.animalMap.getEntities()) this.animalMap.addEntity(a);
+        for (Plant p : fresh.plantMap.getEntities()) this.plantMap.addEntity(p);
+        for (Parasite p : fresh.parasiteMap.getEntities()) this.parasiteMap.addEntity(p);
+        this.deadAnimals.addAll(fresh.deadAnimals);
+
+        this.totalDeadAnimalsAge = fresh.totalDeadAnimalsAge;
+        this.deadAnimalsCount = fresh.deadAnimalsCount;
+    }
 }

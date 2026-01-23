@@ -174,10 +174,23 @@ public class Simulation {
     }
 
     private int day = 0;
+    private final java.util.Stack<WorldMap> history = new java.util.Stack<>();
 
     public void step() {
+        // Zapisz stan przed krokiem
+        history.push(worldMap.copy());
+
         tickSimulation();
         day++;
         notifyObservers("Dzień: " + day);
+    }
+    
+    public void undo() {
+        if (history.isEmpty()) return;
+
+        WorldMap previousState = history.pop();
+        worldMap.restore(previousState);
+        day--;
+        notifyObservers("Cofnięto (Dzień: " + day + ")");
     }
 }

@@ -18,6 +18,12 @@ public class LayerMap<T extends Entity> {
         }
     }
 
+    public void clear() {
+        for(List<T> list : entitiesByPosition.values()) {
+            list.clear();
+        }
+    }
+
     public void addEntity(T entity) {
         entitiesByPosition.computeIfAbsent(entity.getPosition(), k -> new ArrayList<>()).add(entity);
     }

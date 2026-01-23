@@ -33,6 +33,12 @@ public class Genotype {
         }
     }
 
+    public Genotype(Genotype other) {
+        this.genes = new ArrayList<>(other.genes);
+        this.genotypeLenght = other.genotypeLenght;
+        this.currentGeneIndex = other.currentGeneIndex;
+    }
+
     public Genotype(List<MoveDirection> genes) {
         this.genes = new ArrayList<>(genes); // Kopia listy
         this.genotypeLenght = genes.size();

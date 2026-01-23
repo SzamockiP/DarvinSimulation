@@ -133,6 +133,19 @@ public class SimulationWindowPresenter implements MapChangeListener {
         }
     }
 
+    @FXML
+    private void onUndoClicked() {
+        if (isSimulationRunning) {
+            System.out.println("Zatrzymaj symulację, aby cofnąć!");
+            return;
+        }
+        if (simulation != null) {
+            new Thread(() -> {
+                simulation.undo();
+            }).start();
+        }
+    }
+
 
     @Override
     public void mapChanged(WorldMap worldMap, String message) {

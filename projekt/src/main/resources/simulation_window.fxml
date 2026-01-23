@@ -28,6 +28,7 @@
 
             <Button text="STOP" onAction="#onStopClicked" style="-fx-background-color: red; -fx-text-fill: white;"/>
             <Button text="START (Wznów)" onAction="#onResumeClicked" style="-fx-background-color: green; -fx-text-fill: white;"/>
+            <Button text="Cofnij dzień" onAction="#onUndoClicked" style="-fx-background-color: orange; -fx-text-fill: white;"/>
             <Button text="Następny dzień" onAction="#onNextDayClicked" style="-fx-background-color: blue; -fx-text-fill: white;"/>
             
             <Label text="Opóźnienie (ms)" style="-fx-font-weight: bold;"/>
