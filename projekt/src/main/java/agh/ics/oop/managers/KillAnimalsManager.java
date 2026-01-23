@@ -13,7 +13,7 @@ public class KillAnimalsManager implements ISimulationManager {
     public void step(WorldMap map, SimulationConfig config) {
         List<Animal> deadAnimals = new ArrayList<>();
 
-        // 1. Znajdź martwe
+        // Znajdź martwe
         for(Animal animal : map.getAnimals().getEntities()){
             if(animal.getEnergy() <= 0 || !animal.isAlive()){ // Upewnij się co do warunku
                 animal.kill(); // Na wszelki wypadek
@@ -21,7 +21,7 @@ public class KillAnimalsManager implements ISimulationManager {
             }
         }
 
-        // 2. Usuń je bezpiecznie
+        // Usuń je bezpiecznie
         for(Animal animal : deadAnimals){
             map.getAnimals().removeEntity(animal);
             map.addDeadAnimalStats(animal.getAge());

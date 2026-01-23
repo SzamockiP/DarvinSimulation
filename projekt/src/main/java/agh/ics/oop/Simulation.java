@@ -15,7 +15,7 @@ public class Simulation {
     private final SimulationConfig simulationConfig;
     private final WorldMap worldMap;
     private final List<ISimulationManager> managers;
-    private final List<MapChangeListener> observers = new ArrayList<>();
+    private final List<IMapChangeListener> observers = new ArrayList<>();
 
     public Simulation(WorldMap worldMap, SimulationConfig simulationConfig) {
         this.simulationConfig = simulationConfig;
@@ -161,16 +161,16 @@ public class Simulation {
         }
     }
 
-    public void addObserver(MapChangeListener observer) {
+    public void addObserver(IMapChangeListener observer) {
         observers.add(observer);
     }
 
-    public void removeObserver(MapChangeListener observer) {
+    public void removeObserver(IMapChangeListener observer) {
         observers.remove(observer);
     }
 
     private void notifyObservers(String message) {
-        for (MapChangeListener observer : observers) {
+        for (IMapChangeListener observer : observers) {
             observer.mapChanged(worldMap, message);
         }
     }

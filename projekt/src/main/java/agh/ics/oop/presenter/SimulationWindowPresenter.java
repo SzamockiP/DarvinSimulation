@@ -22,7 +22,7 @@ import java.io.File;
 import java.util.Set;
 
 
-public class SimulationWindowPresenter implements MapChangeListener {
+public class SimulationWindowPresenter implements IMapChangeListener {
     private WorldMap worldMap;
     private StatisticsEngine statisticsEngine;
     private Simulation simulation;
