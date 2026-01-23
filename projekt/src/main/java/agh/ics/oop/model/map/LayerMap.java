@@ -1,6 +1,9 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.map;
 
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.Boundary;
+import agh.ics.oop.model.base.Vector2d;
+import agh.ics.oop.model.base.Entity;
+import agh.ics.oop.model.Creature;
 
 import java.util.*;
 

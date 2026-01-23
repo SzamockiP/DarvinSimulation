@@ -1,6 +1,9 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+
+
 import agh.ics.oop.model.util.SimulationConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +53,7 @@ class ParasiteTest {
     @Test
     void testParasiteMovesWithHost() {
         // Given
-        Animal host = new Animal(new Vector2d(5, 5), 50, new Genotype(5));
+        Animal host = new Animal(new Vector2d(5, 5), new Genotype(5), 50, config);
         host.setDirection(MapDirection.NORTH);
         
         Parasite parasite = new Parasite(new Vector2d(5, 5), new Genotype(5), config);

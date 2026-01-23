@@ -1,6 +1,9 @@
 package agh.ics.oop.presenter;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+import agh.ics.oop.model.interfaces.*;
 import agh.ics.oop.model.statistics.*;
 import agh.ics.oop.model.util.*;
 import javafx.fxml.FXML;
@@ -17,7 +20,7 @@ import javafx.scene.control.ComboBox;
 
 import java.io.File;
 import java.util.Set;
-import agh.ics.oop.presenter.StatisticsLogger;
+
 
 public class SimulationWindowPresenter implements MapChangeListener {
     private WorldMap worldMap;

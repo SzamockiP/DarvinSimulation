@@ -1,5 +1,12 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.interfaces.IMove;
+import agh.ics.oop.model.interfaces.IReproduce;
+import agh.ics.oop.model.map.LayerMap;
+import agh.ics.oop.model.base.Vector2d;
+import agh.ics.oop.model.base.Entity;
+import agh.ics.oop.model.base.MapDirection;
+import agh.ics.oop.model.base.MoveDirection;
 import agh.ics.oop.model.util.SimulationConfig;
 
 public class Parasite extends Creature implements IMove,IReproduce {

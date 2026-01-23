@@ -1,10 +1,9 @@
 package agh.ics.oop;
 
 import agh.ics.oop.model.Animal;
-import agh.ics.oop.model.Vector2d;
-import agh.ics.oop.model.WorldMap;
-import agh.ics.oop.model.WorldMap;
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.Vector2d;
+import agh.ics.oop.model.map.WorldMap;
+import agh.ics.oop.model.base.Boundary;
 import agh.ics.oop.model.util.SimulationConfig;
 
 import java.util.ArrayList;

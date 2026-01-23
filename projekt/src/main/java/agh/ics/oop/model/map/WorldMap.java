@@ -1,6 +1,9 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.map;
 
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.Boundary;
+import agh.ics.oop.model.Animal;
+import agh.ics.oop.model.Plant;
+import agh.ics.oop.model.Parasite;
 import java.util.List;
 
 public class WorldMap {

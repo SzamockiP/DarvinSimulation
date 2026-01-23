@@ -1,4 +1,6 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.base;
+
+import agh.ics.oop.model.interfaces.IEntity;
 
 public abstract class Entity implements IEntity {
     private Vector2d position;

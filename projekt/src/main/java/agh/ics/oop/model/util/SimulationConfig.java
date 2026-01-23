@@ -1,5 +1,7 @@
 package agh.ics.oop.model.util;
 
+import agh.ics.oop.model.base.Boundary;
+
 public record SimulationConfig(
         Boundary mapSize,
         Boundary jungleSize,

@@ -1,6 +1,9 @@
 package agh.ics.oop.model;
 
 import java.util.Comparator;
+import agh.ics.oop.model.map.LayerMap;
+import agh.ics.oop.model.base.Vector2d;
+import agh.ics.oop.model.base.Entity;
 import agh.ics.oop.model.Genotype;
 import agh.ics.oop.model.util.SimulationConfig;
 

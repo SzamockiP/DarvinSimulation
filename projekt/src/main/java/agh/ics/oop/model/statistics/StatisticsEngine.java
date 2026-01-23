@@ -1,6 +1,8 @@
 package agh.ics.oop.model.statistics;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
 
 import java.util.*;
 import java.util.stream.Collectors;

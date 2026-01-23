@@ -1,6 +1,9 @@
 package agh.ics.oop.presenter.renderers;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+import agh.ics.oop.model.interfaces.*;
 import agh.ics.oop.model.util.SimulationConfig;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;

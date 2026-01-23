@@ -1,6 +1,11 @@
 package agh.ics.oop.model;
 
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+import agh.ics.oop.model.Genotype;
+import agh.ics.oop.model.util.SimulationConfig;
+
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +20,7 @@ class LayerMapTest {
         
         Vector2d startPos = new Vector2d(2, 2);
         
-        Animal animal = new Animal(startPos, 100); 
+        Animal animal = new Animal(startPos, new Genotype(5), 100, new SimulationConfig(new Boundary(new Vector2d(0,0), new Vector2d(10,10)), new Boundary(new Vector2d(0,0), new Vector2d(10,10)), 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)); 
         map.addEntity(animal);
         
         assertTrue(map.getEntitiesAt(startPos).contains(animal));
@@ -34,7 +39,7 @@ class LayerMapTest {
     // Helper class for testing
     class DeterministicAnimal extends Animal {
         public DeterministicAnimal(Vector2d position, int initialEnergy) {
-            super(position, initialEnergy);
+            super(position, new Genotype(5), initialEnergy, new SimulationConfig(new Boundary(new Vector2d(0,0), new Vector2d(10,10)), new Boundary(new Vector2d(0,0), new Vector2d(10,10)), 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0));
             this.setDirection(MapDirection.NORTH);
         }
         

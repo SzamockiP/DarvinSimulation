@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.SimulationConfig;
+import agh.ics.oop.model.base.MoveDirection;
 
 import java.util.stream.Collectors;
 import java.util.ArrayList;

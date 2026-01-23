@@ -1,7 +1,9 @@
 package agh.ics.oop.managers;
 
 import agh.ics.oop.model.*;
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+import agh.ics.oop.model.base.Boundary;
 import agh.ics.oop.model.util.SimulationConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,7 @@ class ManagersTest {
         FeedAnimalsManager manager = new FeedAnimalsManager();
         Vector2d pos = new Vector2d(2, 2);
         
-        Animal animal = new Animal(pos, 10, new Genotype(5));
+        Animal animal = new Animal(pos, new Genotype(5), 10, config);
         Plant plant = new Plant(pos);
         
         map.getAnimals().addEntity(animal);
@@ -55,10 +57,10 @@ class ManagersTest {
         KillAnimalsManager manager = new KillAnimalsManager();
         Vector2d pos = new Vector2d(3, 3);
         
-        Animal deadAnimal = new Animal(pos, 10, new Genotype(5));
+        Animal deadAnimal = new Animal(pos, new Genotype(5), 10, config);
         deadAnimal.kill();
         
-        Animal liveAnimal = new Animal(pos, 10, new Genotype(5));
+        Animal liveAnimal = new Animal(pos, new Genotype(5), 10, config);
         
         map.getAnimals().addEntity(deadAnimal);
         map.getAnimals().addEntity(liveAnimal);
@@ -77,7 +79,7 @@ class ManagersTest {
         SetHostsManager manager = new SetHostsManager();
         Vector2d pos = new Vector2d(1, 1);
         
-        Animal animal = new Animal(pos, 100);
+        Animal animal = new Animal(pos, new Genotype(5), 100, config);
         Parasite parasite = new Parasite(pos, new Genotype(5), config);
         
         map.getAnimals().addEntity(animal);
@@ -102,9 +104,9 @@ class ManagersTest {
         ReproduceAnimalsManager manager = new ReproduceAnimalsManager();
         Vector2d pos = new Vector2d(5, 5);
         
-        Animal strong = new Animal(pos, 100);
-        Animal weak = new Animal(pos, 10);
-        Animal medium = new Animal(pos, 50);
+        Animal strong = new Animal(pos, new Genotype(5), 100, config);
+        Animal weak = new Animal(pos, new Genotype(5), 10, config);
+        Animal medium = new Animal(pos, new Genotype(5), 50, config);
         
         map.getAnimals().addEntity(strong);
         map.getAnimals().addEntity(weak); 
