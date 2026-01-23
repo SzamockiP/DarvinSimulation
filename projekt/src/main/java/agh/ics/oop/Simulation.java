@@ -37,13 +37,13 @@ public class Simulation {
             );
         }
 
-        // dodaj rośliny
-        // Optymalizacja: nie próbuj stawiać więcej roślin niż jest miejsc
+        // dodaj rośliny 
         int width = simulationConfig.mapSize().upperRight().getX();
         int height = simulationConfig.mapSize().upperRight().getY();
         int maxPlants = (width + 1) * (height + 1);
         int plantLimit = Math.min(this.simulationConfig.startingPlants(), maxPlants);
 
+        // nie próbuj stawiać więcej roślin niż jest miejsc
         for(int i = 0; i < plantLimit; i++){
             Vector2d position = getRandomPlantPosition();
 
@@ -76,15 +76,12 @@ public class Simulation {
     }
 
     private Vector2d getRandomPlantPosition() {
-        // Wymiary mapy
         int width = simulationConfig.mapSize().upperRight().getX();
         int height = simulationConfig.mapSize().upperRight().getY();
-
-        // granice "Dżungli" (środkowego paska - 1/5 wysokości)
+        
         int jungleStartY = simulationConfig.jungleSize().lowerLeft().getY();
         int jungleEndY = simulationConfig.jungleSize().upperRight().getY();
 
-        // 3. Tworzymy dwie listy: wolne pola w dżungli i wolne pola na stepie
         List<Vector2d> freeJungleSpots = new ArrayList<>();
         List<Vector2d> freeSteppeSpots = new ArrayList<>();
 
@@ -92,13 +89,15 @@ public class Simulation {
         for (int x = 0; x <= width; x++) {
             for (int y = 0; y <= height; y++) {
                 Vector2d pos = new Vector2d(x, y);
-
-                if (!worldMap.getPlants().isOccupied(pos)) {// Jeśli na danej pozycji NIE MA ROŚLINY
+                if (!worldMap.getPlants().isOccupied(pos)) {// Jeśli na danej pozycji nie ma rośliny
                     if (y >= jungleStartY && y < jungleEndY) {
                         freeJungleSpots.add(pos); // To jest środek (Dżungla)
                     } else {
                         freeSteppeSpots.add(pos); // To jest góra lub dół (Step)
-                    }}}}
+                    }
+                }
+            }
+        }
 
         // Losujemy, gdzie chcemy postawić trawę (80% szans na Dżunglę)
         boolean preferJungle = Math.random() < 0.8; // 80% szans na prawdę
@@ -159,15 +158,15 @@ public class Simulation {
         }
     }
 
-    public void addObserver(MapChangeListener observer) {// Metoda do rejestrowania obserwatorów
+    public void addObserver(MapChangeListener observer) {
         observers.add(observer);
     }
 
-    public void removeObserver(MapChangeListener observer) {// Metoda do usuwania
+    public void removeObserver(MapChangeListener observer) {
         observers.remove(observer);
     }
 
-    private void notifyObservers(String message) { // Metoda wywołuje mapChanged u każdego obserwatora
+    private void notifyObservers(String message) {
         for (MapChangeListener observer : observers) {
             observer.mapChanged(worldMap, message);
         }

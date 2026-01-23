@@ -376,8 +376,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
             double barHeight = Math.max(2, cellHeight * 0.15); // Pasek ma 15% wysokości pola (min 2px)
             double barX = x + (cellWidth - barWidth) / 2; // Centrujemy pasek w poziomie względem pola
 
-            // Rysujemy pasek na samej górze pola (lub lekko nad nim, np. y - barHeight)
-            // Tutaj rysuję go na górze wewnątrz pola, żeby nie nachodził na sąsiadów wyżej
+            // Rysujemy pasek na samej górze pola
             double barY = y;
             gc.fillRect(barX, barY, barWidth, barHeight);
 

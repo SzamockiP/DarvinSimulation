@@ -66,7 +66,7 @@ public class WorldMap {
         }
 
         // Kopiowanie martwych zwierząt
-        // (Ważne: martwe zwierzęta nie są na mapie, ale są w statystykach)
+        // (martwe zwierzęta nie są na mapie, ale są w statystykach)
         for(Animal dead : this.deadAnimals) {
              newMap.getDeadAnimals().add((Animal) dead.copy());
         }
@@ -81,8 +81,6 @@ public class WorldMap {
             Parasite copy = (Parasite) parasite.copy();
             newMap.getParasites().addEntity(copy);
             
-            // Relinkowanie
-            // Musimy to zrobić PO skopiowaniu wszystkich zwierząt (hostów)
             copy.relink(idMap);
         }
 
@@ -90,16 +88,16 @@ public class WorldMap {
     }
 
     public void restore(WorldMap snapshot) {
-        // 1. Tworzymy świeżą głęboką kopię snapshotu (aby nie modyfikować historii)
+        // Tworzymy świeżą kopię snapshotu aby nie modyfikować historii
         WorldMap fresh = snapshot.copy();
 
-        // 2. Czyścimy obecny stan
+        // Czyścimy obecny stan
         this.animalMap.clear();
         this.plantMap.clear();
         this.parasiteMap.clear();
         this.deadAnimals.clear();
 
-        // 3. Przenosimy zawartość ze świeżej kopii
+        // Przenosimy zawartość ze świeżej kopii
         for (Animal a : fresh.animalMap.getEntities()) this.animalMap.addEntity(a);
         for (Plant p : fresh.plantMap.getEntities()) this.plantMap.addEntity(p);
         for (Parasite p : fresh.parasiteMap.getEntities()) this.parasiteMap.addEntity(p);

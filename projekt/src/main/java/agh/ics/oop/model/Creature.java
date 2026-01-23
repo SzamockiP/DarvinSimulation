@@ -105,7 +105,7 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
     @Override
     public Creature reproduce(Creature other) {
         if(!other.getClass().equals(this.getClass())){
-            throw new ClassCastException("Can't reproduce different class creatures");
+            throw new ClassCastException("Nie można rozmnożyć różnych klas");
         }
         SimulationConfig config = getSimulationConfig();
 
