@@ -28,12 +28,10 @@ public class SimulationWindowPresenter implements MapChangeListener {
     private final java.util.concurrent.atomic.AtomicInteger simulationDelay = new java.util.concurrent.atomic.AtomicInteger(300);
     String topGenotype;
     Set<Vector2d> mostPlacedGrass;
-    private StatisticsLogger statisticsLogger; //
+    private StatisticsLogger statisticsLogger;
 
     @FXML private ComboBox<String> statsComboBox;
     @FXML private LineChart<Number, Number> statsChart;
-    private XYChart.Series<Number, Number> currentSeries;
-    private int currentDay = 0;
 
     @FXML private Canvas mapCanvas;
     @FXML private Label dayLabel;
@@ -41,31 +39,13 @@ public class SimulationWindowPresenter implements MapChangeListener {
 
     @FXML private javafx.scene.control.Spinner<Integer> speedSpinner;
 
+    private agh.ics.oop.presenter.renderers.MapRenderer mapRenderer;
+    private StatisticsChartPresenter chartPresenter;
+
     @FXML
     public void initialize() {
-        statsComboBox.getItems().addAll(
-                "Liczba zwierząt",
-                "Liczba roślin",
-                "Liczba pasożytów",
-                "Wolne pola",
-                "Średnia energia",
-                "Średnia długość życia",
-                "Średnia liczba dzieci",
-                "Przyczepione pasożyty",
-                "Panikujące pasożyty"
-        );
-        statsComboBox.getSelectionModel().select(0);
-
-        currentSeries = new XYChart.Series<>();
-        currentSeries.setName(statsComboBox.getValue());
-        statsChart.getData().add(currentSeries);
-
-        statsComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            statsChart.getData().clear();
-            currentSeries = new XYChart.Series<>();
-            currentSeries.setName(newVal);
-            statsChart.getData().add(currentSeries);
-        });
+        chartPresenter = new StatisticsChartPresenter(statsComboBox, statsChart);
+        chartPresenter.initialize();
     }
 
     public void setSimulationConfig(SimulationConfig config) {
@@ -76,17 +56,17 @@ public class SimulationWindowPresenter implements MapChangeListener {
         this.statisticsEngine = new StatisticsEngine(worldMap);
         this.simulation = new Simulation(worldMap, config);
         this.statisticsLogger = new StatisticsLogger(folderName + File.separator + fileName);
+        
+        this.mapRenderer = new agh.ics.oop.presenter.renderers.MapRenderer(mapCanvas);
 
         simulation.addObserver(this);
 
-        // Initial draw
         Platform.runLater(() -> {
-            drawMap();
+            mapRenderer.drawMap(worldMap, mostPlacedGrass, topGenotype);
             mapChanged(worldMap, "Dzień: 0");
             
-            // gdy zmienia się wartość w okienku, zmienna w tle sama się zaktualizuje
             speedSpinner.valueProperty().addListener((obs, oldVal, newVal) -> simulationDelay.set(newVal));
-            simulationDelay.set(speedSpinner.getValue()); // Ustawienie początkowe
+            simulationDelay.set(speedSpinner.getValue()); 
         });
         
         startSimulationThread();
@@ -99,7 +79,6 @@ public class SimulationWindowPresenter implements MapChangeListener {
                     if (isSimulationRunning && simulation != null) {
                         simulation.step();
                     }
-                    // Czytamy bezpieczną stałą, którą aktualizuje listener
                     Thread.sleep(simulationDelay.get());
                 } catch (InterruptedException e) {
                     break;
@@ -142,6 +121,7 @@ public class SimulationWindowPresenter implements MapChangeListener {
         if (simulation != null) {
             new Thread(() -> {
                 simulation.undo();
+                Platform.runLater(() -> chartPresenter.decrementDay());
             }).start();
         }
     }
@@ -163,30 +143,11 @@ public class SimulationWindowPresenter implements MapChangeListener {
             statisticsLogger.log(stats);
         }
 
-        // Wysyłamy do GUI tylko gotowy wynik
         Platform.runLater(() -> {
-            drawMap(); 
+            mapRenderer.drawMap(worldMap, mostPlacedGrass, topGenotype); 
             dayLabel.setText(message);
             updateStatsLabel(stats);
-
-            // Update Chart
-            currentDay++;
-            if (currentSeries != null && statsComboBox.getValue() != null) {
-                double value = 0.0;
-                String selected = statsComboBox.getValue();
-                switch (selected) {
-                    case "Liczba zwierząt" -> value = stats.animalCount();
-                    case "Liczba roślin" -> value = stats.plantCount();
-                    case "Liczba pasożytów" -> value = stats.parasiteCount();
-                    case "Wolne pola" -> value = stats.freeFieldsCount();
-                    case "Średnia energia" -> value = stats.averageEnergy();
-                    case "Średnia długość życia" -> value = stats.averageLifeSpan();
-                    case "Średnia liczba dzieci" -> value = stats.averageChildren();
-                    case "Przyczepione pasożyty" -> value = stats.attachedParasiteCount();
-                    case "Panikujące pasożyty" -> value = stats.panickingParasiteCount();
-                }
-                currentSeries.getData().add(new XYChart.Data<>(currentDay, value));
-            }
+            chartPresenter.update(stats);
         });
     }
 
@@ -218,170 +179,4 @@ public class SimulationWindowPresenter implements MapChangeListener {
                 topGenotype
         ));
     }
-
-    private void drawMap() {
-        if (worldMap == null) return;
-
-        GraphicsContext gc = mapCanvas.getGraphicsContext2D();
-
-        gc.clearRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
-
-        gc.setFill(Color.ANTIQUEWHITE);
-        gc.fillRect(0, 0, mapCanvas.getWidth(), mapCanvas.getHeight());
-
-        double mapWidth = worldMap.getCurrentBoundary().upperRight().getX() + 1;
-        double mapHeight = worldMap.getCurrentBoundary().upperRight().getY() + 1;
-
-        double cellWidth = mapCanvas.getWidth() / Math.max(1, mapWidth);
-        double cellHeight = mapCanvas.getHeight() / Math.max(1, mapHeight);
-
-        drawJungle(gc, mapWidth, mapHeight, cellWidth, cellHeight);
-        drawGoodSpots(gc, mapWidth, mapHeight, cellWidth, cellHeight);
-        drawEntities(gc, worldMap.getPlants().getEntities(), Color.DARKGREEN, mapHeight, cellWidth, cellHeight);
-        drawCreatures(gc, worldMap.getAnimals().getEntities(), Color.BROWN, Color.BLACK, mapHeight, cellWidth, cellHeight, 1.0);
-        drawCreatures(gc, worldMap.getParasites().getEntities(), Color.BLACK, Color.BLUE, mapHeight, cellWidth, cellHeight, 0.5);
-        drawGrid(gc, mapWidth, mapHeight, cellWidth, cellHeight);
-    }
-    
-    public void drawGrid(GraphicsContext gc, double mapWidth, double mapHeight,
-                         double cellWidth, double cellHeight) {
-        gc.setStroke(Color.DARKGRAY);
-        gc.setLineWidth(0.2);
-        for (int x = 0; x <= mapWidth; x++) {
-            gc.strokeLine(x * cellWidth, 0, x * cellWidth, mapCanvas.getHeight());
-        }
-        for (int y = 0; y <= mapHeight; y++) {
-            gc.strokeLine(0, y * cellHeight, mapCanvas.getWidth(), y * cellHeight);
-        }
-    }
-    
-    public void drawJungle(GraphicsContext gc, double mapWidth, double mapHeight,
-                         double cellWidth, double cellHeight) {
-        int height = (int) mapHeight;
-        int jungleHeight = Math.max(1, height / 5);
-        int jungleStartY = (height - jungleHeight) / 2;
-        
-        double visualY = (mapHeight - jungleStartY - jungleHeight) * cellHeight;
-
-        gc.setFill(Color.LIGHTGREEN);
-        gc.fillRect(
-                0,                              
-                visualY,     
-                mapCanvas.getWidth(),          
-                jungleHeight * cellHeight       
-        );
-    }
-    public void drawGoodSpots(GraphicsContext gc, double mapWidth, double mapHeight,
-                         double cellWidth, double cellHeight) {
-        if (mostPlacedGrass == null || mostPlacedGrass.isEmpty()) return;
-
-        gc.setFill(Color.LIGHTYELLOW);// Ustawiamy kolor wyróżnienia na półprzezroczysty czerwony
-
-        for (Vector2d position : mostPlacedGrass) {
-            double logicX = position.getX();
-            double logicY = position.getY();
-
-            double visualY = mapHeight - 1 - logicY;
-            double x = logicX * cellWidth;
-            double y = visualY * cellHeight;
-
-            gc.fillRect(x, y, cellWidth, cellHeight);
-        }
-    }
-    
-    private void drawEntities(GraphicsContext gc, java.util.Collection<? extends Entity> entities,
-                               Color color, double mapHeight, double cellWidth, double cellHeight) {
-        gc.setFill(color);
-
-        for (Entity entity : entities) {
-            gc.setFill(color);
-            double logicX = entity.getPosition().getX();
-            double logicY = entity.getPosition().getY();
-
-            Vector2d position = entity.getPosition();
-            if (mostPlacedGrass != null && mostPlacedGrass.contains(position)) {
-                gc.setFill(Color.LAWNGREEN);
-            }
-            
-            double visualY = mapHeight - 1 - logicY;
-            
-            double x = logicX * cellWidth;
-            double y = visualY * cellHeight;
-
-            gc.fillRect(x, y, cellWidth, cellHeight);
-        }
-    }
-
-    private void drawCreatures(GraphicsContext gc, java.util.Collection<? extends Creature> creatures,
-                               Color bodyColor, Color eyeColor, double mapHeight, double cellWidth, double cellHeight, double scale) {
-        for (Creature creature : creatures) {
-            double logicX = creature.getPosition().getX();
-            double logicY = creature.getPosition().getY();
-            
-            double visualY = mapHeight - 1 - logicY;
-            
-            double x = logicX * cellWidth;
-            double y = visualY * cellHeight;
-
-            // Rozmiar ciała i pozycja
-            double width = cellWidth * scale;
-            double height = cellHeight * scale;
-            double offsetX = (cellWidth - width) / 2;
-            double offsetY = (cellHeight - height) / 2;
-            double centerX = x + cellWidth / 2;
-            double centerY = y + cellHeight / 2;
-
-            // Rysowanie ciała
-            String currentGenotype = creature.getGenotype().toString();
-            if (topGenotype != null && topGenotype.equals(currentGenotype)) {
-                gc.setFill(Color.BLUEVIOLET);
-            } else {
-                gc.setFill(bodyColor);
-            }
-            gc.fillOval(x + offsetX, y + offsetY, width, height);
-
-            // Rysowanie oczu
-            Vector2d dir = creature.getDirection().getUnitVector();
-
-            // (0,1) -> Góra -> -90 stopni
-            double angle = Math.toDegrees(Math.atan2(-dir.getY(), dir.getX()));
-
-            gc.save();
-            gc.translate(centerX, centerY);
-            gc.rotate(angle);
-
-            gc.setFill(eyeColor);
-            double eyeSize = width * 0.20;
-            double eyeDist = width * 0.30;
-            double eyeSep = width * 0.20; 
-
-            gc.fillOval(eyeDist - eyeSize / 2, -eyeSep - eyeSize / 2, eyeSize, eyeSize);
-            gc.fillOval(eyeDist - eyeSize / 2, eyeSep - eyeSize / 2, eyeSize, eyeSize);
-
-            gc.restore();
-
-            int energy = creature.getEnergy(); // Zakładam, że klasa Creature ma tę metodę publiczną
-            SimulationConfig config = creature.getSimulationConfig();
-
-            // 2. Dobieramy kolor
-            if (energy <= config.dailyEnergyLoss() * 2) {
-                gc.setFill(Color.RED);
-            } else if (energy <= config.dailyEnergyLoss() * 4) {
-                gc.setFill(Color.YELLOW);
-            } else {
-                gc.setFill(Color.GREEN);
-            }
-
-            double barWidth = cellWidth * 0.8;       // Pasek na 80% szerokości pola
-            double barHeight = Math.max(2, cellHeight * 0.15); // Pasek ma 15% wysokości pola (min 2px)
-            double barX = x + (cellWidth - barWidth) / 2; // Centrujemy pasek w poziomie względem pola
-
-            // Rysujemy pasek na samej górze pola
-            double barY = y;
-            gc.fillRect(barX, barY, barWidth, barHeight);
-
-            gc.restore();
-        }
-    }
-
 }
