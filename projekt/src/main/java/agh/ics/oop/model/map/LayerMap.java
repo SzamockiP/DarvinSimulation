@@ -1,6 +1,9 @@
-package agh.ics.oop.model;
+package agh.ics.oop.model.map;
 
-import agh.ics.oop.model.util.Boundary;
+import agh.ics.oop.model.base.Boundary;
+import agh.ics.oop.model.base.Vector2d;
+import agh.ics.oop.model.base.Entity;
+import agh.ics.oop.model.Creature;
 
 import java.util.*;
 
@@ -15,6 +18,12 @@ public class LayerMap<T extends Entity> {
             for (int x = 0; x <= boundary.upperRight().getX(); x++) {
                 entitiesByPosition.put(new Vector2d(x, y), new ArrayList<>());
             }
+        }
+    }
+
+    public void clear() {
+        for(List<T> list : entitiesByPosition.values()) {
+            list.clear();
         }
     }
 

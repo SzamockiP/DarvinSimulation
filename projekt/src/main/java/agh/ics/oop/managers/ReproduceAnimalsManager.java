@@ -1,6 +1,9 @@
 package agh.ics.oop.managers;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+import agh.ics.oop.model.interfaces.*;
 import agh.ics.oop.model.util.SimulationConfig;
 import java.util.List;
 
@@ -26,7 +29,9 @@ public class ReproduceAnimalsManager implements ISimulationManager {
 
                 Animal secondBestAnimal = null;
                 for(Animal animal : animals){
-                    if(animal.getEnergy() <= bestAnimal.getEnergy() && animal != bestAnimal){
+                    if(animal == bestAnimal) continue;
+                    
+                    if(secondBestAnimal == null || animal.getEnergy() > secondBestAnimal.getEnergy()){
                         secondBestAnimal = animal;
                     }
                 }

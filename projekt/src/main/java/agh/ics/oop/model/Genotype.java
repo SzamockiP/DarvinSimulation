@@ -1,6 +1,7 @@
 package agh.ics.oop.model;
 
 import agh.ics.oop.model.util.SimulationConfig;
+import agh.ics.oop.model.base.MoveDirection;
 
 import java.util.stream.Collectors;
 import java.util.ArrayList;
@@ -31,6 +32,12 @@ public class Genotype {
                 this.genes.add(MoveDirection.FRONT);
             }
         }
+    }
+
+    public Genotype(Genotype other) {
+        this.genes = new ArrayList<>(other.genes);
+        this.genotypeLenght = other.genotypeLenght;
+        this.currentGeneIndex = other.currentGeneIndex;
     }
 
     public Genotype(List<MoveDirection> genes) {
@@ -104,10 +111,11 @@ public class Genotype {
 
 
         // losujemy ile genów i jakie będą poddane mutacji
-        int amountRandomGenes = random.nextInt(genesCount); // ile genów
+        // losujemy ile genów i jakie będą poddane mutacji
+        int mutationCount = random.nextInt(config.mutationMax() - config.mutationMin() + 1) + config.mutationMin();
         Set<Integer> indexes = new HashSet<>();
-        while(indexes.size() < amountRandomGenes){
-            int idx = random.nextInt(config.mutationMax() -  config.mutationMin()) + config.mutationMin();
+        while(indexes.size() < mutationCount){
+            int idx = random.nextInt(genesCount);
             if(!indexes.contains(idx)){
                 indexes.add(idx);
                 childGenes.set(idx, MoveDirection.values()[random.nextInt(MoveDirection.values().length)]);

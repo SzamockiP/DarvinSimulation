@@ -1,4 +1,14 @@
 package agh.ics.oop.model;
+
+import agh.ics.oop.model.base.Entity;
+import agh.ics.oop.model.base.MapDirection;
+import agh.ics.oop.model.base.Vector2d;
+import agh.ics.oop.model.base.MoveDirection;
+import agh.ics.oop.model.base.Boundary;
+import agh.ics.oop.model.interfaces.IAlive;
+import agh.ics.oop.model.interfaces.IMove;
+import agh.ics.oop.model.map.LayerMap;
+import agh.ics.oop.model.interfaces.IReproduce;
 import agh.ics.oop.model.Genotype;
 import agh.ics.oop.model.util.SimulationConfig;
 
@@ -21,6 +31,15 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
 
     public Creature(Vector2d position, int initialEnergy, int genomeSize, SimulationConfig simulationConfig) {
         this(position, initialEnergy, new Genotype(genomeSize), simulationConfig);
+    }
+
+    public Creature(Creature other) {
+        super(other.getPosition());
+        this.energy = other.energy;
+        this.genotype = new Genotype(other.genotype);
+        this.direction = other.direction;
+        this.isAlive = other.isAlive;
+        this.simulationConfig = other.simulationConfig;
     }
 
     public SimulationConfig getSimulationConfig() {
@@ -71,34 +90,38 @@ public abstract class Creature extends Entity implements IAlive, IMove,IReproduc
 
         this.setDirection(this.getDirection().rotate(rotation));
 
-        if (rotation.equals(MoveDirection.FRONT)) {
-            Vector2d unitVector = this.getDirection().getUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
+        Vector2d unitVector = this.getDirection().getUnitVector(); // wybieramy wektor, który pasuje dla tego kierunku
 
-            Vector2d currentPos = this.getPosition();
-            Vector2d newPos = currentPos.add(unitVector);
+        Vector2d currentPos = this.getPosition();
+        Vector2d newPos = currentPos.add(unitVector);
 
-            if (map.inBounds(newPos)) {
-                this.setPosition(newPos);
-            } else { // odbijamy od ściany
+        Boundary bounds = map.getCurrentBoundary();
 
-                this.setDirection(this.getDirection().rotate(MoveDirection.BACK)); // zawróć
+        // Sprawdzenie góry/dołu
+        if (newPos.getY() < bounds.lowerLeft().getY() || newPos.getY() > bounds.upperRight().getY()) {
+            this.setDirection(this.getDirection().rotate(MoveDirection.BACK)); // zawróć
+            // Po obrocie recalculujemy pozycję (ruch w nową stronę)
+            newPos = currentPos.add(this.getDirection().getUnitVector());
+        }
 
-                Vector2d bounceVector = this.getDirection().getUnitVector();
+        // Sprawdzenie lewej/prawej
+        int newX = newPos.getX();
+        if (newX < bounds.lowerLeft().getX()) {
+            newX = bounds.upperRight().getX();
+        } else if (newX > bounds.upperRight().getX()) {
+            newX = bounds.lowerLeft().getX();
+        }
+        newPos = new Vector2d(newX, newPos.getY());
 
-                Vector2d bouncePos = currentPos.add(bounceVector);
-
-                // FIXME: Biedak może być w rogu i znowu się teoretycznie odbić, ale to już jego problem
-                if (map.inBounds(bouncePos)) {
-                    this.setPosition(bouncePos);
-                }
-            }
+        if (map.inBounds(newPos)) {
+            this.setPosition(newPos);
         }
     }
 
     @Override
     public Creature reproduce(Creature other) {
         if(!other.getClass().equals(this.getClass())){
-            throw new ClassCastException("Can't reproduce different class creatures");
+            throw new ClassCastException("Nie można rozmnożyć różnych klas");
         }
         SimulationConfig config = getSimulationConfig();
 

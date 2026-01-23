@@ -1,4 +1,4 @@
-package agh.ics.oop.presenter; // Lub inny pakiet, w którym trzymasz pomocnicze klasy
+package agh.ics.oop.presenter;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public class PresetManager {
         }
     }
 
-    // Zwraca listę samych nazw presetów (do wyświetlenia w ComboBox)
+    // Zwraca listę samych nazw presetów
     public List<String> loadPresetNames() {
         List<String> names = new ArrayList<>();
         File file = new File(PRESET_FILE);

@@ -1,6 +1,9 @@
 package agh.ics.oop.managers;
 
 import agh.ics.oop.model.*;
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.map.*;
+import agh.ics.oop.model.interfaces.*;
 import agh.ics.oop.model.util.SimulationConfig;
 
 public class MoveParasitesManager implements ISimulationManager {

@@ -1,4 +1,4 @@
-package agh.ics.oop.presenter; // lub agh.ics.oop.model.statistics
+package agh.ics.oop.model.statistics;
 
 import agh.ics.oop.model.statistics.SimulationStatistics;
 import java.io.*;

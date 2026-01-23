@@ -1,5 +1,8 @@
 package agh.ics.oop.model;
 
+import agh.ics.oop.model.base.*;
+import agh.ics.oop.model.util.SimulationConfig;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -8,6 +11,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenotypeTest {
+    private SimulationConfig config = new SimulationConfig(
+            new Boundary(new Vector2d(0,0), new Vector2d(10,10)),
+            new Boundary(new Vector2d(0,0), new Vector2d(10,10)),
+            1, 5, 1, 1, 1, 10, 5, 1, 1, 1, 1, 1, 1, 1, 10
+    );
 
     @Test
     void testGenotypeSize() {
@@ -39,7 +47,7 @@ class GenotypeTest {
         Genotype g2 = new Genotype(size);
         
         // When
-        Genotype child = g1.cross(g2, 50, 50);
+        Genotype child = g1.cross(g2, 50, 50, config);
         
         // Then
         assertEquals(size, child.getGenes().size());
@@ -57,7 +65,7 @@ class GenotypeTest {
         Genotype g2 = new Genotype(genes2);
         
         // When
-        Genotype child = g1.cross(g2, 100, 0);
+        Genotype child = g1.cross(g2, 100, 0, config);
 
         // Then
         assertEquals(10, child.getGenes().size());
