@@ -41,6 +41,7 @@ class ParasiteTest {
     void testParasiteLossesEnergyInPanic() {
         // Given
         Parasite parasite = new Parasite(new Vector2d(5, 5), new Genotype(5), config);
+        parasite.setHost(null); // Trigger panic
         map.addEntity(parasite);
 
         // When

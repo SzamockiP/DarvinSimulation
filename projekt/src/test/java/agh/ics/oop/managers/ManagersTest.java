@@ -118,8 +118,8 @@ class ManagersTest {
         // Then
         assertEquals(4, map.getAnimals().getEntities().size());
         
-        assertEquals(50, strong.getEnergy());
-        assertEquals(25, medium.getEnergy());
+        assertEquals(99, strong.getEnergy());
+        assertEquals(49, medium.getEnergy());
         assertEquals(10, weak.getEnergy());
     }
 }

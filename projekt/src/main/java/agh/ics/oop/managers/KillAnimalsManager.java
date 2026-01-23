@@ -25,6 +25,7 @@ public class KillAnimalsManager implements ISimulationManager {
         for(Animal animal : deadAnimals){
             map.getAnimals().removeEntity(animal);
             map.addDeadAnimalStats(animal.getAge());
+            map.getDeadAnimals().add(animal);
         }
     }
 }

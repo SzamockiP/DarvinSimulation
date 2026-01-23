@@ -111,10 +111,11 @@ public class Genotype {
 
 
         // losujemy ile genów i jakie będą poddane mutacji
-        int amountRandomGenes = random.nextInt(genesCount); // ile genów
+        // losujemy ile genów i jakie będą poddane mutacji
+        int mutationCount = random.nextInt(config.mutationMax() - config.mutationMin() + 1) + config.mutationMin();
         Set<Integer> indexes = new HashSet<>();
-        while(indexes.size() < amountRandomGenes){
-            int idx = random.nextInt(config.mutationMax() -  config.mutationMin()) + config.mutationMin();
+        while(indexes.size() < mutationCount){
+            int idx = random.nextInt(genesCount);
             if(!indexes.contains(idx)){
                 indexes.add(idx);
                 childGenes.set(idx, MoveDirection.values()[random.nextInt(MoveDirection.values().length)]);

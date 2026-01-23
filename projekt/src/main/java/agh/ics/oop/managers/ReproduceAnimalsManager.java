@@ -29,7 +29,9 @@ public class ReproduceAnimalsManager implements ISimulationManager {
 
                 Animal secondBestAnimal = null;
                 for(Animal animal : animals){
-                    if(animal.getEnergy() <= bestAnimal.getEnergy() && animal != bestAnimal){
+                    if(animal == bestAnimal) continue;
+                    
+                    if(secondBestAnimal == null || animal.getEnergy() > secondBestAnimal.getEnergy()){
                         secondBestAnimal = animal;
                     }
                 }

@@ -13,7 +13,7 @@ class AnimalTest {
     private SimulationConfig config = new SimulationConfig(
             new Boundary(new Vector2d(0,0), new Vector2d(10,10)),
             new Boundary(new Vector2d(0,0), new Vector2d(10,10)),
-            1, 5, 1, 1, 1, 10, 5, 1, 1, 1, 1, 1, 1, 1, 10
+            1, 5, 1, 1, 1, 10, 5, 1, 1, 1, 1, 25, 1, 1, 10
     );
 
     @Test
