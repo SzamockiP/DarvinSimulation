@@ -40,7 +40,6 @@ public class StatisticsLogger {
                 stats.averageEnergy(), SEPARATOR,
                 stats.averageLifeSpan(), SEPARATOR,
                 stats.averageChildren()
-                // Możesz dodać więcej pól jeśli potrzebujesz
         );
 
         // Dopisywanie do pliku (tryb append = true)
