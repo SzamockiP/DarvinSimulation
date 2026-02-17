@@ -1,4 +1,6 @@
-Darvin simulation diagram
+Project made with https://github.com/Zuzia132
+
+Diagram
 ```mermaid
 ---
 config:
